@@ -1,0 +1,71 @@
+{
+    "name": "projects/2107893222241932507",
+    "projectId": "2107893222241932507",
+    "title": "Phuket Thai",
+    "visibility": "PRIVATE",
+    "createTime": "2026-03-07T15:18:45Z",
+    "updateTime": "2026-03-07T15:58:45Z",
+    "projectType": "PROJECT_DESIGN",
+    "origin": "STITCH",
+    "deviceType": "MOBILE",
+    "designTheme": {
+        "colorMode": "LIGHT",
+        "font": "INTER",
+        "roundness": "ROUND_TWELVE",
+        "customColor": "#e5b224",
+        "saturation": 3
+    },
+    "screens": {
+        "menu": {
+            "id": "7d34dcebdf7942e5915243f27ec088b4",
+            "sourceScreen": "projects/2107893222241932507/screens/7d34dcebdf7942e5915243f27ec088b4",
+            "x": 0,
+            "y": 0,
+            "width": 780,
+            "height": 1768
+        },
+        "item-customization": {
+            "id": "e10e243bcda54b0a81750e6aa80132d9",
+            "sourceScreen": "projects/2107893222241932507/screens/e10e243bcda54b0a81750e6aa80132d9",
+            "x": 820,
+            "y": 0,
+            "width": 780,
+            "height": 1768
+        },
+        "home": {
+            "id": "fbea7ea0fb994cacb7b7cb324208bf3e",
+            "sourceScreen": "projects/2107893222241932507/screens/fbea7ea0fb994cacb7b7cb324208bf3e",
+            "x": -820,
+            "y": 0,
+            "width": 780,
+            "height": 2612
+        },
+        "cart": {
+            "id": "5c26490136544381b0fbef7993c9ca36",
+            "sourceScreen": "projects/2107893222241932507/screens/5c26490136544381b0fbef7993c9ca36",
+            "x": 1640,
+            "y": 0,
+            "width": 780,
+            "height": 1768
+        },
+        "checkout": {
+            "id": "70e5297fb7e540beb420e53d3d63d5a6",
+            "sourceScreen": "projects/2107893222241932507/screens/70e5297fb7e540beb420e53d3d63d5a6",
+            "x": 2460,
+            "y": 0,
+            "width": 780,
+            "height": 1900
+        },
+        "order-tracking": {
+            "id": "02c5eea646d449a3bea9efffd91bb51a",
+            "sourceScreen": "projects/2107893222241932507/screens/02c5eea646d449a3bea9efffd91bb51a",
+            "x": -1640,
+            "y": 0,
+            "width": 780,
+            "height": 2140
+        }
+    },
+    "metadata": {
+        "userRole": "OWNER"
+    }
+}

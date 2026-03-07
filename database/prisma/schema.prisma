@@ -1,0 +1,450 @@
+// ─────────────────────────────────────────────────────────────────────
+// Restaurant Direct — MVP Database Schema
+// Source of truth: /ai/architecture.md, /ai/implementation_decisions.md, /docs/PRD.md
+// Frozen for MVP after initial migration. Changes require architecture review.
+// ─────────────────────────────────────────────────────────────────────
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// ENUMS — Canonical values from architecture.md §3.7, §5.1, §5.2
+// ═══════════════════════════════════════════════════════════════════
+
+enum UserRole {
+  customer
+  staff
+  admin
+  driver
+}
+
+enum OrderStatus {
+  pending
+  confirmed
+  preparing
+  ready_for_pickup
+  out_for_delivery
+  delivered
+  cancelled
+}
+
+enum OrderType {
+  delivery
+  collection
+}
+
+enum OrderPaymentStatus {
+  unpaid
+  paid
+}
+
+enum PaymentStatus {
+  pending
+  processing
+  succeeded
+  failed
+  refunded
+}
+
+enum PaymentProvider {
+  stripe
+  in_store
+}
+
+enum PaymentMethod {
+  card_online
+  cash
+  card_in_store
+}
+
+enum DeliveryStatus {
+  unassigned
+  assigned
+  picked_up
+  on_the_way
+  delivered
+  failed
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// TABLE 1: Users (Auth Module)
+// Soft delete via deleted_at. Never hard-delete users with orders.
+// ═══════════════════════════════════════════════════════════════════
+
+model User {
+  id            String    @id @default(uuid())
+  name          String
+  email         String    @unique
+  phone         String?
+  passwordHash  String    @map("password_hash")
+  role          UserRole  @default(customer)
+  deletedAt     DateTime? @map("deleted_at")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  addresses     Address[]
+  orders        Order[]
+  driver        Driver?
+  paymentsCollected Payment[] @relation("PaymentCollector")
+
+  @@map("users")
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// TABLE 2: Addresses (Auth Module)
+// Multiple per user. Lat/lng for delivery distance calculation.
+// No restaurant_id — user-owned, not restaurant-scoped.
+// ═══════════════════════════════════════════════════════════════════
+
+model Address {
+  id          String   @id @default(uuid())
+  userId      String   @map("user_id")
+  label       String?  // e.g. "Home", "Work"
+  street      String
+  city        String
+  postalCode  String   @map("postal_code")
+  latitude    Decimal  @db.Decimal(10, 7)
+  longitude   Decimal  @db.Decimal(10, 7)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  orders      Order[]
+
+  @@index([userId])
+  @@map("addresses")
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// TABLE 3: Restaurants (Menu Module)
+// is_active serves as soft delete. RESTRICT deletion if orders exist.
+// ═══════════════════════════════════════════════════════════════════
+
+model Restaurant {
+  id            String    @id @default(uuid())
+  name          String
+  description   String?
+  phone         String?
+  email         String?
+  address       String?
+  openingHours  String?   @map("opening_hours") // Structured text, not Json
+  isActive      Boolean   @default(true) @map("is_active")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  menuCategories  MenuCategory[]
+  menuItems       MenuItem[]
+  menuItemOptions MenuItemOption[]
+  orders          Order[]
+  deliveries      Delivery[]
+
+  @@map("restaurants")
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// TABLE 4: Menu Categories (Menu Module)
+// ═══════════════════════════════════════════════════════════════════
+
+model MenuCategory {
+  id            String   @id @default(uuid())
+  restaurantId  String   @map("restaurant_id")
+  name          String
+  displayOrder  Int      @default(0) @map("display_order")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  restaurant    Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  menuItems     MenuItem[]
+
+  @@index([restaurantId])
+  @@map("menu_categories")
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// TABLE 5: Menu Items (Menu Module)
+// is_available used as soft delete flag. Price is Decimal for precision.
+// ═══════════════════════════════════════════════════════════════════
+
+model MenuItem {
+  id            String   @id @default(uuid())
+  restaurantId  String   @map("restaurant_id")
+  categoryId    String?  @map("category_id") // Nullable: SET NULL on category delete
+  name          String
+  description   String?
+  price         Decimal  @db.Decimal(10, 2)
+  imageUrl      String?  @map("image_url")
+  isAvailable   Boolean  @default(true) @map("is_available")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  restaurant    Restaurant     @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  category      MenuCategory?  @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  options       MenuItemOption[]
+  orderItems    OrderItem[]
+
+  @@index([restaurantId])
+  @@index([categoryId])
+  @@map("menu_items")
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// TABLE 6: Menu Item Options (Menu Module)
+// Modifiers/extras per menu item (e.g. "Add Cheese +$1.50")
+// ═══════════════════════════════════════════════════════════════════
+
+model MenuItemOption {
+  id            String   @id @default(uuid())
+  menuItemId    String   @map("menu_item_id")
+  restaurantId  String   @map("restaurant_id")
+  name          String
+  price         Decimal  @db.Decimal(10, 2)
+  isAvailable   Boolean  @default(true) @map("is_available")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  menuItem      MenuItem   @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
+  restaurant    Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+
+  // Analytics back-references from order snapshots
+  orderItemOptions OrderItemOption[]
+
+  @@index([menuItemId])
+  @@index([restaurantId])
+  @@map("menu_item_options")
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// TABLE 7: Orders (Order Module)
+// Central transaction record. Snapshot totals stored at creation.
+// NEVER deleted. restaurant_id for future multi-restaurant SaaS.
+// ═══════════════════════════════════════════════════════════════════
+
+model Order {
+  id                    String             @id @default(uuid())
+  customerId            String             @map("customer_id")
+  restaurantId          String             @map("restaurant_id")
+  addressId             String?            @map("address_id") // Nullable for collection orders
+  status                OrderStatus        @default(pending)
+  orderType             OrderType          @map("order_type")
+  paymentStatus         OrderPaymentStatus @default(unpaid) @map("payment_status")
+
+  // Snapshot totals — stored at creation, never recomputed
+  subtotal              Decimal            @db.Decimal(10, 2)
+  deliveryFee           Decimal?           @db.Decimal(10, 2) @map("delivery_fee")
+  taxAmount             Decimal            @db.Decimal(10, 2) @map("tax_amount")
+  totalAmount           Decimal            @db.Decimal(10, 2) @map("total_amount")
+
+  // Delivery distance snapshot — null for collection orders
+  deliveryDistanceMeters Int?              @map("delivery_distance_meters")
+  deliveryFeeBand       String?            @map("delivery_fee_band") // e.g. "0-5km"
+
+  // Idempotency
+  idempotencyKey        String?            @unique @map("idempotency_key")
+
+  createdAt             DateTime           @default(now()) @map("created_at")
+  updatedAt             DateTime           @updatedAt @map("updated_at")
+
+  // Relations
+  customer              User               @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  restaurant            Restaurant         @relation(fields: [restaurantId], references: [id], onDelete: Restrict)
+  address               Address?           @relation(fields: [addressId], references: [id], onDelete: SetNull)
+  orderItems            OrderItem[]
+  payments              Payment[]
+  delivery              Delivery?
+  statusHistory         OrderStatusHistory[]
+
+  @@index([customerId])
+  @@index([restaurantId])
+  @@index([status])
+  @@map("orders")
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// TABLE 8: Order Items (Order Module)
+// SNAPSHOT FIELDS: item_name, item_price, line_total are copied at
+// purchase time. Historical orders NEVER change if menu prices change.
+// ═══════════════════════════════════════════════════════════════════
+
+model OrderItem {
+  id            String   @id @default(uuid())
+  orderId       String   @map("order_id")
+  menuItemId    String   @map("menu_item_id") // Reference for analytics only
+  itemName      String   @map("item_name")     // SNAPSHOT
+  itemPrice     Decimal  @db.Decimal(10, 2) @map("item_price") // SNAPSHOT
+  quantity      Int
+  lineTotal     Decimal  @db.Decimal(10, 2) @map("line_total") // SNAPSHOT: item_price * qty + options
+
+  // Relations
+  order         Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  menuItem      MenuItem @relation(fields: [menuItemId], references: [id], onDelete: Restrict)
+  options       OrderItemOption[]
+
+  @@index([orderId])
+  @@map("order_items")
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// TABLE 9: Order Item Options (Order Module)
+// SNAPSHOT FIELDS: option_name, option_price are copied at purchase.
+// source_menu_item_option_id is optional analytics reference ONLY —
+// it must NEVER be used to derive pricing.
+// ═══════════════════════════════════════════════════════════════════
+
+model OrderItemOption {
+  id                       String          @id @default(uuid())
+  orderItemId              String          @map("order_item_id")
+  sourceMenuItemOptionId   String?         @map("source_menu_item_option_id") // Analytics only, nullable
+  optionName               String          @map("option_name")   // SNAPSHOT
+  optionPrice              Decimal         @db.Decimal(10, 2) @map("option_price") // SNAPSHOT
+
+  // Relations
+  orderItem                OrderItem       @relation(fields: [orderItemId], references: [id], onDelete: Cascade)
+  sourceMenuItemOption     MenuItemOption? @relation(fields: [sourceMenuItemOptionId], references: [id], onDelete: SetNull)
+
+  @@index([orderItemId])
+  @@map("order_item_options")
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// TABLE 10: Payments (Payment Module)
+// Canonical ledger for ALL money events (Stripe + in-store).
+// One-to-many with orders (supports retries, refunds).
+// CONSTRAINT: Only one payment per order may have status = succeeded
+// (enforced at application layer).
+// NEVER deleted.
+// ═══════════════════════════════════════════════════════════════════
+
+model Payment {
+  id                  String          @id @default(uuid())
+  orderId             String          @map("order_id")
+  provider            PaymentProvider
+  method              PaymentMethod
+  providerPaymentId   String?         @map("provider_payment_id") // Stripe PI id, null for in-store
+  amount              Decimal         @db.Decimal(10, 2)
+  currency            String          @default("ZAR") @db.VarChar(3)
+  status              PaymentStatus   @default(pending)
+
+  // In-store accountability fields (null for Stripe payments)
+  collectedByUserId   String?         @map("collected_by_user_id")
+  collectedAt         DateTime?       @map("collected_at")
+
+  createdAt           DateTime        @default(now()) @map("created_at")
+  updatedAt           DateTime        @updatedAt @map("updated_at")
+
+  // Relations
+  order               Order           @relation(fields: [orderId], references: [id], onDelete: Restrict)
+  collectedBy         User?           @relation("PaymentCollector", fields: [collectedByUserId], references: [id], onDelete: SetNull)
+
+  @@index([orderId])
+  @@map("payments")
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// TABLE 11: Drivers (Delivery Module)
+// 1:1 extension of users. A user with role=driver must have exactly
+// one drivers record. drivers.user_id is UNIQUE FK to users.id.
+// No restaurant_id — platform-level, serves multiple restaurants.
+// ═══════════════════════════════════════════════════════════════════
+
+model Driver {
+  id                  String    @id @default(uuid())
+  userId              String    @unique @map("user_id") // 1:1 with User
+  vehicleType         String?   @map("vehicle_type")
+  isAvailable         Boolean   @default(false) @map("is_available")
+
+  // Current location (dual model — latest known, see §3.10)
+  currentLatitude     Decimal?  @db.Decimal(10, 7) @map("current_latitude")
+  currentLongitude    Decimal?  @db.Decimal(10, 7) @map("current_longitude")
+  locationRecordedAt  DateTime? @map("location_recorded_at")
+
+  createdAt           DateTime  @default(now()) @map("created_at")
+  updatedAt           DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  user                User      @relation(fields: [userId], references: [id], onDelete: Restrict)
+  deliveries          Delivery[]
+  locationHistory     DriverLocation[]
+
+  @@map("drivers")
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// TABLE 12: Deliveries (Delivery Module)
+// Links an order to a driver. restaurant_id for multi-restaurant.
+// RESTRICT deletion on both order and driver sides.
+// ═══════════════════════════════════════════════════════════════════
+
+model Delivery {
+  id            String         @id @default(uuid())
+  orderId       String         @unique @map("order_id") // 1:1 with Order
+  driverId      String?        @map("driver_id") // Nullable until assigned
+  restaurantId  String         @map("restaurant_id")
+  status        DeliveryStatus @default(unassigned)
+  pickedUpAt    DateTime?      @map("picked_up_at")
+  deliveredAt   DateTime?      @map("delivered_at")
+  createdAt     DateTime       @default(now()) @map("created_at")
+  updatedAt     DateTime       @updatedAt @map("updated_at")
+
+  // Relations
+  order         Order      @relation(fields: [orderId], references: [id], onDelete: Restrict)
+  driver        Driver?    @relation(fields: [driverId], references: [id], onDelete: Restrict)
+  restaurant    Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Restrict)
+
+  @@index([driverId])
+  @@index([restaurantId])
+  @@map("deliveries")
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// TABLE 13: Driver Locations (Delivery Module)
+// Append-only history. Retention: 7–30 days, cleanup via scheduled job.
+// delivery_id nullable — location can be recorded outside active delivery.
+// ═══════════════════════════════════════════════════════════════════
+
+model DriverLocation {
+  id            String    @id @default(uuid())
+  driverId      String    @map("driver_id")
+  deliveryId    String?   @map("delivery_id") // Nullable
+  latitude      Decimal   @db.Decimal(10, 7)
+  longitude     Decimal   @db.Decimal(10, 7)
+  recordedAt    DateTime  @default(now()) @map("recorded_at")
+
+  // Relations
+  driver        Driver    @relation(fields: [driverId], references: [id], onDelete: Cascade)
+
+  @@index([driverId, recordedAt])
+  @@map("driver_locations")
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// TABLE 14: Order Status History (Order Module)
+// Audit trail for status transitions. changed_by nullable for
+// system-triggered transitions. NEVER deleted (cascades with order).
+// ═══════════════════════════════════════════════════════════════════
+
+model OrderStatusHistory {
+  id          String      @id @default(uuid())
+  orderId     String      @map("order_id")
+  status      OrderStatus
+  changedBy   String?     @map("changed_by") // user_id of staff, null for system
+  note        String?     // Optional reason for transition
+  createdAt   DateTime    @default(now()) @map("created_at")
+
+  // Relations
+  order       Order       @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId, createdAt])
+  @@map("order_status_history")
+}

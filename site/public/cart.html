@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              colors: {
+                "primary": "#e5b224",
+                "background-light": "#f8f7f6",
+                "background-dark": "#211d11",
+              },
+              fontFamily: {
+                "display": ["Inter"]
+              },
+              borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+            },
+          },
+        }
+    </script>
+<title>Thai Restaurant Cart Summary</title>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-display bg-background-light dark:bg-background-dark">
+<!-- Main Background (Simulating the screen behind the Bottom Sheet) -->
+<div class="relative flex min-h-screen w-full flex-col overflow-hidden">
+<div class="p-6">
+<div class="flex items-center gap-4 mb-8">
+<span class="material-symbols-outlined text-slate-900 dark:text-slate-100">arrow_back</span>
+<h1 class="text-2xl font-bold text-slate-900 dark:text-slate-100">Green Lotus Thai</h1>
+</div>
+<div class="space-y-6">
+<div class="aspect-video w-full rounded-xl bg-slate-200 dark:bg-slate-800 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Delicious thai green curry in a bowl" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAv54XHdo5GVZVe1xk8_IkJ8L0ViAsgZ_nhJ6GuUXyTqi4gKdZoKqw2xoI6_5iI3Ix8nEkVE-TdFsHpBx8nDf8Hc42Vc9A-wyPcZ5H9fj3Q7oC7ZPUl0iEsx-9kVQxDXbLO7Q6icr6IcFX6_EXcOWX083Q0JecvNef0W_OcnhYk-LKX7caGfyFWTpOdSlHjBBvrB-aDk3SIt0yAYzgq1aB-wPc5JPe_-fch5MjsgBuMjf3Swi2qy6OZHLHsdBF2sLouFR_aTYbkbng"/>
+</div>
+<div class="h-24 w-full rounded-lg bg-slate-100 dark:bg-slate-800/50"></div>
+<div class="h-24 w-full rounded-lg bg-slate-100 dark:bg-slate-800/50"></div>
+</div>
+</div>
+<!-- Dimmed Overlay -->
+<div class="absolute inset-0 bg-slate-900/40 backdrop-blur-[2px] z-10"></div>
+<!-- Bottom Sheet Modal -->
+<div class="absolute inset-x-0 bottom-0 z-20 flex flex-col items-stretch bg-white dark:bg-slate-900 rounded-t-xl shadow-2xl max-h-[90vh]">
+<!-- Handle -->
+<button class="flex h-6 w-full items-center justify-center">
+<div class="h-1.5 w-12 rounded-full bg-slate-200 dark:bg-slate-700"></div>
+</button>
+<!-- Header -->
+<div class="flex items-center px-6 py-4 border-b border-slate-100 dark:border-slate-800">
+<h2 class="text-xl font-bold text-slate-900 dark:text-slate-100 flex-1">Your Order</h2>
+<button class="flex h-10 w-10 items-center justify-center rounded-full bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<!-- Items List -->
+<div class="flex-1 overflow-y-auto px-6 py-4 space-y-6">
+<!-- Item 1 -->
+<div class="flex justify-between items-start gap-4">
+<div class="flex-1">
+<h3 class="text-base font-semibold text-slate-900 dark:text-slate-100">Authentic Green Curry</h3>
+<p class="text-sm text-slate-500 dark:text-slate-400 mt-0.5">Spice: Medium, Extras: Veggies</p>
+<p class="text-primary font-bold mt-1">$14.50</p>
+</div>
+<div class="flex items-center gap-3 bg-slate-50 dark:bg-slate-800 p-1 rounded-lg">
+<button class="flex h-8 w-8 items-center justify-center rounded-md bg-white dark:bg-slate-700 shadow-sm text-slate-900 dark:text-slate-100">
+<span class="material-symbols-outlined text-sm">remove</span>
+</button>
+<span class="text-base font-bold text-slate-900 dark:text-slate-100 min-w-[1.5rem] text-center">1</span>
+<button class="flex h-8 w-8 items-center justify-center rounded-md bg-white dark:bg-slate-700 shadow-sm text-slate-900 dark:text-slate-100">
+<span class="material-symbols-outlined text-sm">add</span>
+</button>
+</div>
+</div>
+<!-- Item 2 -->
+<div class="flex justify-between items-start gap-4">
+<div class="flex-1">
+<h3 class="text-base font-semibold text-slate-900 dark:text-slate-100">Panang Curry</h3>
+<p class="text-sm text-slate-500 dark:text-slate-400 mt-0.5">Spice: Mild, Add Chicken</p>
+<p class="text-primary font-bold mt-1">$15.00</p>
+</div>
+<div class="flex items-center gap-3 bg-slate-50 dark:bg-slate-800 p-1 rounded-lg">
+<button class="flex h-8 w-8 items-center justify-center rounded-md bg-white dark:bg-slate-700 shadow-sm text-slate-900 dark:text-slate-100">
+<span class="material-symbols-outlined text-sm">remove</span>
+</button>
+<span class="text-base font-bold text-slate-900 dark:text-slate-100 min-w-[1.5rem] text-center">1</span>
+<button class="flex h-8 w-8 items-center justify-center rounded-md bg-white dark:bg-slate-700 shadow-sm text-slate-900 dark:text-slate-100">
+<span class="material-symbols-outlined text-sm">add</span>
+</button>
+</div>
+</div>
+<!-- Breakdown -->
+<div class="pt-6 border-t border-slate-100 dark:border-slate-800 space-y-3">
+<div class="flex justify-between text-sm">
+<span class="text-slate-500 dark:text-slate-400">Subtotal</span>
+<span class="text-slate-900 dark:text-slate-100">$29.50</span>
+</div>
+<div class="flex justify-between text-sm">
+<span class="text-slate-500 dark:text-slate-400">Tax</span>
+<span class="text-slate-900 dark:text-slate-100">$2.50</span>
+</div>
+<div class="flex justify-between text-sm">
+<span class="text-slate-500 dark:text-slate-400">Delivery</span>
+<span class="text-slate-900 dark:text-slate-100">$5.00</span>
+</div>
+<div class="flex justify-between text-lg font-bold pt-2">
+<span class="text-slate-900 dark:text-slate-100">Total</span>
+<span class="text-slate-900 dark:text-slate-100">$37.00</span>
+</div>
+</div>
+</div>
+<!-- Footer Action -->
+<div class="p-6 border-t border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900">
+<button class="w-full bg-primary hover:bg-primary/90 text-slate-900 font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-colors">
+                    Checkout - $37.00
+                    <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+<!-- Safe Area for iOS -->
+<div class="h-4"></div>
+</div>
+</div>
+</div>
+</body></html>

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#e5b224",
+                        "background-light": "#f8f7f6",
+                        "background-dark": "#211d11",
+                        "charcoal": "#1a1a1a",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .custom-radio:checked {
+            background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3ccircle cx='8' cy='8' r='3'/%3e%3c/svg%3e");
+            background-color: #e5b224;
+            border-color: #e5b224;
+        }
+        .custom-checkbox:checked {
+            background-color: #e5b224;
+            border-color: #e5b224;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display antialiased">
+<!-- Mock Background Menu (Dimmed) -->
+<div class="fixed inset-0 z-0 overflow-hidden">
+<div class="p-4 space-y-6 opacity-40 grayscale">
+<div class="flex justify-between items-center">
+<span class="material-symbols-outlined text-charcoal">arrow_back_ios</span>
+<h1 class="text-xl font-bold">Thai Kitchen</h1>
+<span class="material-symbols-outlined text-charcoal">search</span>
+</div>
+<div class="space-y-4">
+<div class="h-32 w-full bg-slate-200 rounded-xl"></div>
+<div class="h-6 w-1/2 bg-slate-200 rounded"></div>
+<div class="h-4 w-3/4 bg-slate-200 rounded"></div>
+<div class="grid grid-cols-2 gap-4 pt-4">
+<div class="h-40 bg-slate-200 rounded-xl"></div>
+<div class="h-40 bg-slate-200 rounded-xl"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Sheet Modal Overlay -->
+<div class="fixed inset-0 z-50 bg-charcoal/60 flex flex-col justify-end">
+<!-- Modal Content -->
+<div class="bg-white dark:bg-slate-900 w-full max-h-[92vh] overflow-y-auto rounded-t-xl shadow-2xl flex flex-col">
+<!-- Handle -->
+<div class="flex h-6 w-full items-center justify-center sticky top-0 bg-white dark:bg-slate-900 z-10">
+<div class="h-1.5 w-12 rounded-full bg-slate-200 dark:bg-slate-700"></div>
+</div>
+<!-- Header Image & Close -->
+<div class="relative w-full h-56 shrink-0">
+<div class="absolute inset-0 bg-cover bg-center" data-alt="Close up of authentic Thai green curry bowl" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuD0iG2h9u6WxxlV6oHYLdbA_YH1BlyTM9Yw6wlEoLwRUJhgIUS_5i0PIcaj3uXV1kpdhhGOB0YA9XaXs2pLgwqODCCZRCA6rE1rH9x_I6_oMcEkX6JwUY8JPwOmBONKuYKGRiBs7WvcumEhRDXGFFVuK1vPBDwotakqqvIr19SNhmKuNt5Z3wIPcbeWCtC0g5qyc8JJ8SIn1QIVLept0-fWkynI8djYBIkYvN2QDueEzoRzKbS3pkRXR4Mgve8iwTanMzkKwNFZmt8');"></div>
+<button class="absolute top-4 right-4 bg-white/90 p-2 rounded-full shadow-lg text-charcoal">
+<span class="material-symbols-outlined block">close</span>
+</button>
+</div>
+<!-- Title & Info -->
+<div class="p-5 border-b border-slate-100 dark:border-slate-800">
+<h2 class="text-2xl font-bold text-charcoal dark:text-slate-100">Authentic Green Curry</h2>
+<p class="text-slate-500 dark:text-slate-400 mt-1 text-sm">A classic Thai favorite with coconut milk, bamboo shoots, and basil.</p>
+</div>
+<div class="p-5 space-y-8 pb-32">
+<!-- Spice Level -->
+<section>
+<h3 class="text-lg font-bold text-charcoal dark:text-slate-100 mb-4">Choose Spice Level</h3>
+<div class="space-y-3">
+<label class="flex items-center justify-between p-4 rounded-xl border-2 border-slate-100 dark:border-slate-800 has-[:checked]:border-primary transition-colors">
+<span class="font-medium text-slate-700 dark:text-slate-200">Mild</span>
+<input class="custom-radio h-6 w-6 border-slate-300 text-primary focus:ring-primary" name="spice" type="radio"/>
+</label>
+<label class="flex items-center justify-between p-4 rounded-xl border-2 border-primary dark:border-primary bg-primary/5 has-[:checked]:border-primary transition-colors">
+<span class="font-medium text-slate-700 dark:text-slate-200">Medium</span>
+<input checked="" class="custom-radio h-6 w-6 border-slate-300 text-primary focus:ring-primary" name="spice" type="radio"/>
+</label>
+<label class="flex items-center justify-between p-4 rounded-xl border-2 border-slate-100 dark:border-slate-800 has-[:checked]:border-primary transition-colors">
+<span class="font-medium text-slate-700 dark:text-slate-200">Hot</span>
+<input class="custom-radio h-6 w-6 border-slate-300 text-primary focus:ring-primary" name="spice" type="radio"/>
+</label>
+<label class="flex items-center justify-between p-4 rounded-xl border-2 border-slate-100 dark:border-slate-800 has-[:checked]:border-primary transition-colors">
+<span class="font-medium text-slate-700 dark:text-slate-200">Thai Hot</span>
+<input class="custom-radio h-6 w-6 border-slate-300 text-primary focus:ring-primary" name="spice" type="radio"/>
+</label>
+</div>
+</section>
+<!-- Protein Selection -->
+<section>
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-lg font-bold text-charcoal dark:text-slate-100">Protein Selection</h3>
+<span class="px-2 py-1 bg-slate-100 dark:bg-slate-800 rounded text-xs text-slate-500 uppercase font-bold tracking-wider">Required</span>
+</div>
+<div class="space-y-3">
+<label class="flex items-center justify-between p-4 rounded-xl border-2 border-slate-100 dark:border-slate-800 has-[:checked]:border-primary transition-colors">
+<span class="font-medium text-slate-700 dark:text-slate-200">Chicken</span>
+<input checked="" class="custom-radio h-6 w-6 border-slate-300 text-primary focus:ring-primary" name="protein" type="radio"/>
+</label>
+<label class="flex items-center justify-between p-4 rounded-xl border-2 border-slate-100 dark:border-slate-800 has-[:checked]:border-primary transition-colors">
+<span class="font-medium text-slate-700 dark:text-slate-200">Tofu</span>
+<input class="custom-radio h-6 w-6 border-slate-300 text-primary focus:ring-primary" name="protein" type="radio"/>
+</label>
+<label class="flex items-center justify-between p-4 rounded-xl border-2 border-slate-100 dark:border-slate-800 has-[:checked]:border-primary transition-colors">
+<div class="flex flex-col">
+<span class="font-medium text-slate-700 dark:text-slate-200">Beef</span>
+<span class="text-xs text-slate-500">+$2.00</span>
+</div>
+<input class="custom-radio h-6 w-6 border-slate-300 text-primary focus:ring-primary" name="protein" type="radio"/>
+</label>
+<label class="flex items-center justify-between p-4 rounded-xl border-2 border-slate-100 dark:border-slate-800 has-[:checked]:border-primary transition-colors">
+<div class="flex flex-col">
+<span class="font-medium text-slate-700 dark:text-slate-200">Shrimp</span>
+<span class="text-xs text-slate-500">+$3.00</span>
+</div>
+<input class="custom-radio h-6 w-6 border-slate-300 text-primary focus:ring-primary" name="protein" type="radio"/>
+</label>
+</div>
+</section>
+<!-- Extras -->
+<section>
+<h3 class="text-lg font-bold text-charcoal dark:text-slate-100 mb-4">Extras</h3>
+<div class="space-y-3">
+<label class="flex items-center justify-between p-4 rounded-xl border-2 border-slate-100 dark:border-slate-800 has-[:checked]:border-primary transition-colors">
+<div class="flex flex-col">
+<span class="font-medium text-slate-700 dark:text-slate-200">Extra Veggies</span>
+<span class="text-xs text-slate-500">+$1.00</span>
+</div>
+<input class="custom-checkbox h-6 w-6 rounded border-slate-300 text-primary focus:ring-primary" type="checkbox"/>
+</label>
+<label class="flex items-center justify-between p-4 rounded-xl border-2 border-slate-100 dark:border-slate-800 has-[:checked]:border-primary transition-colors">
+<div class="flex flex-col">
+<span class="font-medium text-slate-700 dark:text-slate-200">Extra Coconut Milk</span>
+<span class="text-xs text-slate-500">+$1.00</span>
+</div>
+<input class="custom-checkbox h-6 w-6 rounded border-slate-300 text-primary focus:ring-primary" type="checkbox"/>
+</label>
+</div>
+</section>
+<!-- Special Instructions -->
+<section>
+<h3 class="text-lg font-bold text-charcoal dark:text-slate-100 mb-4">Special Instructions</h3>
+<textarea class="w-full rounded-xl border-2 border-slate-100 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-200 p-4 focus:ring-primary focus:border-primary placeholder:text-slate-400" placeholder="e.g. No bamboo shoots please!" rows="3"></textarea>
+</section>
+</div>
+<!-- Sticky Bottom Action Bar -->
+<div class="fixed bottom-0 left-0 right-0 p-5 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 z-20">
+<button class="w-full bg-primary hover:bg-primary/90 text-charcoal font-bold py-4 rounded-xl transition-transform active:scale-[0.98]">
+                    Add to Cart - $14.50
+                </button>
+<!-- Home Indicator Safe Area (iOS) -->
+<div class="h-4"></div>
+</div>
+</div>
+</div>
+</body></html>

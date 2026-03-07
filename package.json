@@ -1,0 +1,37 @@
+{
+  "name": "restaurant-direct",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Restaurant Ordering & Delivery Platform — Direct ordering without marketplace fees",
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  },
+  "scripts": {
+    "dev": "pnpm --filter ./apps/* --filter ./backend run dev --parallel",
+    "dev:web": "pnpm --filter @restaurant-direct/web run dev",
+    "dev:backend": "pnpm --filter @restaurant-direct/backend run dev",
+    "build": "pnpm --filter ./apps/* --filter ./backend run build",
+    "lint": "pnpm -r run lint",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,css,md}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,css,md}\"",
+    "test": "pnpm -r run test",
+    "clean": "pnpm -r run clean",
+    "db:up": "docker compose up -d",
+    "db:down": "docker compose down",
+    "db:verify": "pnpm --filter @restaurant-direct/database run db:verify",
+    "db:migrate": "pnpm --filter @restaurant-direct/database run db:migrate:dev",
+    "db:generate": "pnpm --filter @restaurant-direct/database run db:generate",
+    "db:studio": "pnpm --filter @restaurant-direct/database run db:studio"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@prisma/client",
+      "@prisma/engines",
+      "prisma",
+      "esbuild",
+      "sharp",
+      "unrs-resolver"
+    ]
+  }
+}

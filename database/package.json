@@ -1,0 +1,28 @@
+{
+    "name": "@restaurant-direct/database",
+    "version": "0.0.1",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "db:generate": "prisma generate",
+        "db:migrate:dev": "prisma migrate dev",
+        "db:migrate:deploy": "prisma migrate deploy",
+        "db:push": "prisma db push",
+        "db:validate": "prisma validate",
+        "db:studio": "prisma studio",
+        "db:verify": "tsx scripts/verify-connection.ts",
+        "db:reset": "prisma migrate reset"
+    },
+    "dependencies": {
+        "@prisma/client": "^6.8.2"
+    },
+    "devDependencies": {
+        "@types/node": "^22.13.0",
+        "prisma": "^6.8.2",
+        "tsx": "^4.19.0"
+    },
+    "exports": {
+        ".": "./src/index.ts",
+        "./client": "./src/client.ts"
+    }
+}
