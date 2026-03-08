@@ -9,7 +9,7 @@
   },
   "scripts": {
     "dev": "pnpm --filter ./apps/* --filter ./backend run dev --parallel",
-    "dev:web": "pnpm --filter @restaurant-direct/web run dev",
+    "dev:admin": "pnpm --filter @restaurant-direct/admin run dev",
     "dev:backend": "pnpm --filter @restaurant-direct/backend run dev",
     "build": "pnpm --filter ./apps/* --filter ./backend run build",
     "lint": "pnpm -r run lint",

@@ -355,7 +355,13 @@ AI agents must **not** introduce alternate terms (e.g. `trips`, `driver_statuses
 
 ---
 
-# 21. Final Instruction
+# 21. Global UI & Design Token Rule
+
+UI-producing agents (Frontend, Architect scaffolding) must **not** invent raw styling, hex codes, or arbitrary dimensions outside of the canonical platform/tenant design token files (`/docs/platform/design_tokens.md` and `/docs/tenants/*/design_tokens.md`). All UI layouts, components, sizes, colors, and motion must be built exclusively using the canonical tokens and Tailwind utility configurations defined therein.
+
+---
+
+# 22. Final Instruction
 
 If the AI agent encounters ambiguity:
 

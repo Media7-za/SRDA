@@ -366,6 +366,47 @@ Each card contains:
 
 ---
 
+# First-Time User Experience (Empty State Home)
+
+When a user has no previous orders, the Home screen must display a discovery-focused layout instead of the "Order Again" module.
+
+This layout is designed to optimize the first conversion and reduce choice paralysis.
+
+Modules displayed:
+
+1. Welcome Hero Card
+   - Shows "Start Your Thai Journey"
+   - Offers 100 bonus loyalty points
+   - CTA: "Claim Your 100 Points"
+
+2. First Reward Progress
+   - Displays progress toward first reward
+   - Example: 0 / 150 points
+   - Message: "Get 150 points for free Spring Rolls"
+
+3. Most Loved Section
+   - Grid layout (2 columns)
+   - Displays popular dishes
+   - Items include "🔥 Popular" badge
+
+4. Quick Add Interaction
+   - Each item card includes a + button
+   - Adds item directly to cart
+
+5. Explore Full Menu CTA
+   - Prominent bottom CTA
+   - Navigates to full menu screen
+
+State Logic:
+
+If user.order_count == 0
+→ Render First-Time Home Layout
+
+Else
+→ Render Returning User Layout (includes "Order Again")
+
+---
+
 # Flow C — Menu Browsing
 
 ### Category Navigation (Scrollspy)
@@ -561,16 +602,88 @@ Must require confirmation dialog.
 Checkout contains:
 
 * delivery / pickup toggle
-* address selection
+* address selection (localized for SA)
 * order summary
-* payment method
+* payment method selection
 * place order button
 
-Button state logic:
+**Payment Methods (ZA Localization):**
 
+1. **SnapScan**
+   - Interactive selection card with logo.
+   - Action: Opens QR Overlay on "Place Order".
+2. **Ozow (Instant EFT)**
+   - Interactive selection card with logo.
+   - Action: Redirects to bank selection flow.
+3. **Credit/Debit Card**
+   - Standard card entry/stored card selection.
+4. **Pay In-Store** (Pickup only)
+
+**Button State Logic:**
+
+```text
+disabled until address + payment method selected
 ```
-disabled until required fields valid
-```
+
+---
+
+# Flow J — Payment Modals (SnapScan Overlay)
+
+Targeted specifically for the South African mobile context.
+
+### Screen: SnapScan QR Overlay
+
+Appears when SnapScan is selected and user taps "Place Order".
+
+**Visual Elements:**
+
+*   **Header:** "Pay with SnapScan" + Close (X) button.
+*   **QR Code:** Large, high-contrast dynamic QR.
+*   **Amount:** Boldly displayed (e.g., R 480.00).
+*   **Instruction:** "Scan to pay or tap to open SnapScan app".
+*   **Deep Link:** On mobile, tapping the QR code (or a "Open App" button) triggers the `snapscan://` deep link.
+
+**State Logic:**
+
+*   **Polling:** Frontend polls `/api/orders/{id}/payment-status` every 3 seconds.
+*   **Success:** Automatically closes modal and redirects to Flow H (Order Tracking) upon confirmation.
+
+---
+
+# Flow K — Store Information Page
+
+Targeted for branch-specific discovery and logistical clarity.
+
+### Screen: Store Info
+
+Triggered by tapping the Store Header on the Home Dashboard.
+
+**Visual Sections:**
+
+1.  **Hero Image:** High-quality photo of the Kloof branch interior/exterior.
+2.  **Status Badge:** Dynamic "Open Now" (Green) or "Closed" (Red) badge with closing/opening time.
+3.  **Action Grid:**
+    *   **Call:** One-tap native dialer.
+    *   **Directions:** Opens Google Maps/Apple Maps.
+    *   **Share:** Native share sheet for the store link.
+    *   **Favorite:** Toggle for quick access.
+4.  **Operational Details:**
+    *   **Address:** Kloof Village Mall, 13 Village Road, Kloof, 3610 (Expandable text with map preview).
+    *   **Phone:** 031 764 0882
+    *   **WhatsApp:** 071 204 1828
+    *   **Opening Hours:**
+        *   Mon - Thu: 11:00 AM – 8:00 PM
+        *   Fri - Sat: 11:00 AM – 8:30 PM
+        *   Sun: 11:00 AM – 8:00 PM
+    *   *Note:* The Kloof branch will be closed for maintenance on Monday, 9 March and Tuesday, 10 March 2026.
+5.  **Amenities / Highlights:**
+    *   Icons for: Outdoor Seating, Halal Friendly, WiFi, Direct Pickup, Secure Parking.
+6.  **About:** Short brand story for Phuket Thai Kloof.
+
+**State Logic:**
+
+*   **Real-time sync:** Hours and Open/Closed status are derived from the `restaurants` database table.
+*   **Deep linking:** Directions button uses `geo:lat,lng` or Maps URL.
 
 ---
 

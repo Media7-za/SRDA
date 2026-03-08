@@ -15,6 +15,10 @@ Before performing any task, you must read:
 /ai/context.md
 /ai/agent_rules.md
 /docs/PRD.md
+/docs/platform/design_tokens.md
+/docs/tenants/*/design_tokens.md
+/docs/component_architecture.md
+/docs/screens/*.md
 
 These documents define:
 
@@ -36,6 +40,7 @@ You must design:
 4️⃣ Service Structure
 5️⃣ Data Models
 6️⃣ Scaling Strategy
+7️⃣ Tailwind Theme & Styling Strategy (via Design Tokens)
 
 You must **not write production code**.
 
@@ -249,7 +254,7 @@ You must **never**:
 
 Write frontend code
 Write backend implementation code
-Invent UI components
+Invent UI components (You must define allowed component system boundaries ONLY from the canonical component doc: `/docs/component_architecture.md`).
 
 Your job is **architecture only**.
 

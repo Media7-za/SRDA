@@ -1,11 +1,9 @@
 <!DOCTYPE html>
-
 <html lang="en"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <script id="tailwind-config">
         tailwind.config = {
@@ -31,7 +29,7 @@
             },
         }
     </script>
-<style>
+<style type="text/tailwindcss">
         .custom-radio:checked {
             background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3ccircle cx='8' cy='8' r='3'/%3e%3c/svg%3e");
             background-color: #e5b224;
@@ -41,6 +39,18 @@
             background-color: #e5b224;
             border-color: #e5b224;
         }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
     </style>
 <style>
     body {
@@ -49,7 +59,6 @@
   </style>
   </head>
 <body class="bg-background-light dark:bg-background-dark font-display antialiased">
-<!-- Mock Background Menu (Dimmed) -->
 <div class="fixed inset-0 z-0 overflow-hidden">
 <div class="p-4 space-y-6 opacity-40 grayscale">
 <div class="flex justify-between items-center">
@@ -68,28 +77,22 @@
 </div>
 </div>
 </div>
-<!-- Bottom Sheet Modal Overlay -->
 <div class="fixed inset-0 z-50 bg-charcoal/60 flex flex-col justify-end">
-<!-- Modal Content -->
-<div class="bg-white dark:bg-slate-900 w-full max-h-[92vh] overflow-y-auto rounded-t-xl shadow-2xl flex flex-col">
-<!-- Handle -->
-<div class="flex h-6 w-full items-center justify-center sticky top-0 bg-white dark:bg-slate-900 z-10">
+<div class="bg-white dark:bg-slate-900 w-full max-h-[92vh] overflow-y-auto rounded-t-xl shadow-2xl flex flex-col no-scrollbar">
+<div class="flex h-6 w-full items-center justify-center sticky top-0 bg-white dark:bg-slate-900 z-30">
 <div class="h-1.5 w-12 rounded-full bg-slate-200 dark:bg-slate-700"></div>
 </div>
-<!-- Header Image & Close -->
 <div class="relative w-full h-56 shrink-0">
-<div class="absolute inset-0 bg-cover bg-center" data-alt="Close up of authentic Thai green curry bowl" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuD0iG2h9u6WxxlV6oHYLdbA_YH1BlyTM9Yw6wlEoLwRUJhgIUS_5i0PIcaj3uXV1kpdhhGOB0YA9XaXs2pLgwqODCCZRCA6rE1rH9x_I6_oMcEkX6JwUY8JPwOmBONKuYKGRiBs7WvcumEhRDXGFFVuK1vPBDwotakqqvIr19SNhmKuNt5Z3wIPcbeWCtC0g5qyc8JJ8SIn1QIVLept0-fWkynI8djYBIkYvN2QDueEzoRzKbS3pkRXR4Mgve8iwTanMzkKwNFZmt8');"></div>
+<div class="absolute inset-0 bg-cover bg-center" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuD0iG2h9u6WxxlV6oHYLdbA_YH1BlyTM9Yw6wlEoLwRUJhgIUS_5i0PIcaj3uXV1kpdhhGOB0YA9XaXs2pLgwqODCCZRCA6rE1rH9x_I6_oMcEkX6JwUY8JPwOmBONKuYKGRiBs7WvcumEhRDXGFFVuK1vPBDwotakqqvIr19SNhmKuNt5Z3wIPcbeWCtC0g5qyc8JJ8SIn1QIVLept0-fWkynI8djYBIkYvN2QDueEzoRzKbS3pkRXR4Mgve8iwTanMzkKwNFZmt8');"></div>
 <button class="absolute top-4 right-4 bg-white/90 p-2 rounded-full shadow-lg text-charcoal">
 <span class="material-symbols-outlined block">close</span>
 </button>
 </div>
-<!-- Title & Info -->
 <div class="p-5 border-b border-slate-100 dark:border-slate-800">
 <h2 class="text-2xl font-bold text-charcoal dark:text-slate-100">Authentic Green Curry</h2>
 <p class="text-slate-500 dark:text-slate-400 mt-1 text-sm">A classic Thai favorite with coconut milk, bamboo shoots, and basil.</p>
 </div>
 <div class="p-5 space-y-8 pb-32">
-<!-- Spice Level -->
 <section>
 <h3 class="text-lg font-bold text-charcoal dark:text-slate-100 mb-4">Choose Spice Level</h3>
 <div class="space-y-3">
@@ -111,7 +114,6 @@
 </label>
 </div>
 </section>
-<!-- Protein Selection -->
 <section>
 <div class="flex items-center justify-between mb-4">
 <h3 class="text-lg font-bold text-charcoal dark:text-slate-100">Protein Selection</h3>
@@ -142,7 +144,6 @@
 </label>
 </div>
 </section>
-<!-- Extras -->
 <section>
 <h3 class="text-lg font-bold text-charcoal dark:text-slate-100 mb-4">Extras</h3>
 <div class="space-y-3">
@@ -162,20 +163,53 @@
 </label>
 </div>
 </section>
-<!-- Special Instructions -->
+<section>
+<h3 class="text-lg font-bold text-charcoal dark:text-slate-100 mb-4">Frequent Pairings</h3>
+<div class="flex overflow-x-auto pb-4 -mx-5 px-5 gap-3 no-scrollbar snap-x">
+<div class="flex-shrink-0 w-40 bg-slate-50 dark:bg-slate-800/50 p-3 rounded-xl border border-slate-100 dark:border-slate-800 snap-start">
+<div class="flex flex-col items-center text-center">
+<div class="w-16 h-16 rounded-full bg-cover bg-center mb-3 shadow-sm border-2 border-white dark:border-slate-700" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBOyENMedQVSx8pbPjg7TJs86XZhGNQiGOtGsFq82flRi7Mzm8BswH5p8sjc55z-cTJ0T-FJkxtMI8YGBdXVoQK1wAE4GSrfZyCG1F9dR71Or_a_2kPPdq5ZriBVXQTUecE1wSMP9Bud8-9J8VKiLB3FuXmcXGZIgS8K67iixYbQfN3MvkbYNbc_fRs24zVaS40ckdNRwqx5IotAVkie_HzWpfXVF9guHgoj6hFOJtcExguEXfpQSUjqL5bBWZlTrkZRiwYhe6Z2gM')"></div>
+<span class="text-sm font-semibold text-charcoal dark:text-slate-100 block truncate w-full">Thai Iced Tea</span>
+<span class="text-xs text-slate-500 dark:text-slate-400 mb-3">$4.00</span>
+<button class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-charcoal shadow-sm active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-xl font-bold">add</span>
+</button>
+</div>
+</div>
+<div class="flex-shrink-0 w-40 bg-slate-50 dark:bg-slate-800/50 p-3 rounded-xl border border-slate-100 dark:border-slate-800 snap-start">
+<div class="flex flex-col items-center text-center">
+<div class="w-16 h-16 rounded-full bg-cover bg-center mb-3 shadow-sm border-2 border-white dark:border-slate-700" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAhz0n3G9FTpJvKJFjer3cGEnO3SwJnoiDCBw37mFzaVntFzFzKc54s85SEoP5r96wvbFxLf-cAyabjz0TwO9Y6QPdF5AEqUNkllcErPotHzcecSOLbBm-FvkkSv8YWiOW762SK-02bZwvyiaehm27MxV_zMl0d1vaKyhWNYAFglMn7eetJ8WZeHluJ2qpAI73SsrYvXxfNuB-FeNkBjp9twrBGMvdya80TdMKIMnVsHS4wqKQSuU8pMMgFEzF_DMKiW-kjTFg_daA')"></div>
+<span class="text-sm font-semibold text-charcoal dark:text-slate-100 block truncate w-full">Veggie Spring Rolls</span>
+<span class="text-xs text-slate-500 dark:text-slate-400 mb-3">$6.50</span>
+<button class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-charcoal shadow-sm active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-xl font-bold">add</span>
+</button>
+</div>
+</div>
+<div class="flex-shrink-0 w-40 bg-slate-50 dark:bg-slate-800/50 p-3 rounded-xl border border-slate-100 dark:border-slate-800 snap-start">
+<div class="flex flex-col items-center text-center">
+<div class="w-16 h-16 rounded-full bg-cover bg-center mb-3 shadow-sm border-2 border-white dark:border-slate-700" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBCxtIiC6f4yslGBqHVJumlLY-s7mwgSlEjJhuj-uHI4lD6VDg9Xo43XpShJdNokexsnuFP9b43opIta8EqWn-T_FtCzdzA5OGY5r7cY8nZgd7LQWEpi41PqcRF42y_5mu09zg5ONqGRwCnuMdwLdD_sqZjm1v53fRGp5DGeEH16OMVGE-uWgF0JiRsu1cgGSRNRiBjPPozpu3vsRsUMI-3SUIV6edXFOPEi9j6vDTfGS0zd9tPf3-83xuKSL_LT-lflH64EVqvW9M')"></div>
+<span class="text-sm font-semibold text-charcoal dark:text-slate-100 block truncate w-full">Peanut Sauce</span>
+<span class="text-xs text-slate-500 dark:text-slate-400 mb-3">$1.50</span>
+<button class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-charcoal shadow-sm active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-xl font-bold">add</span>
+</button>
+</div>
+</div>
+</div>
+</section>
 <section>
 <h3 class="text-lg font-bold text-charcoal dark:text-slate-100 mb-4">Special Instructions</h3>
 <textarea class="w-full rounded-xl border-2 border-slate-100 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-200 p-4 focus:ring-primary focus:border-primary placeholder:text-slate-400" placeholder="e.g. No bamboo shoots please!" rows="3"></textarea>
 </section>
 </div>
-<!-- Sticky Bottom Action Bar -->
-<div class="fixed bottom-0 left-0 right-0 p-5 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 z-20">
+<div class="fixed bottom-0 left-0 right-0 p-5 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 z-40">
 <button class="w-full bg-primary hover:bg-primary/90 text-charcoal font-bold py-4 rounded-xl transition-transform active:scale-[0.98]">
                     Add to Cart - $14.50
                 </button>
-<!-- Home Indicator Safe Area (iOS) -->
 <div class="h-4"></div>
 </div>
 </div>
 </div>
+
 </body></html>

@@ -42,6 +42,7 @@ Typical marketplaces charge 20–35% per order. This system allows restaurants t
 
 ### Customers
 People ordering food.
+
 **Needs:**
 * Fast ordering
 * Easy payment
@@ -89,6 +90,20 @@ People ordering food.
 * **Order Tracking**
   * Order status: Pending, Confirmed, Preparing, Ready, Out for delivery, Delivered
 
+### First-Time User Onboarding
+
+When a new user opens the app for the first time:
+
+• Display a welcome loyalty incentive
+• Highlight popular dishes
+• Encourage the first order
+
+Home screen modules must prioritize:
+
+- loyalty signup incentive
+- social proof ("Most Loved")
+- frictionless item discovery
+
 ---
 
 ## 4. Restaurant Dashboard
@@ -108,9 +123,9 @@ Restaurant can: Create categories, Add items, Edit prices, Enable / disable item
 
 ### Opening Hours
 *Example:*
-* Monday 09:00 - 21:00
-* Tuesday 09:00 - 21:00
-* Sunday Closed
+* Monday - Thursday 11:00 - 20:00
+* Friday - Saturday 11:00 - 20:30
+* Sunday 11:00 - 20:00
 
 ---
 
@@ -369,7 +384,7 @@ Modern stack most YC companies use:
 * **Backend:** Supabase
   * *Includes:* PostgreSQL, auth, storage, realtime
 * **Maps:** Google Maps API
-* **Payments:** Stripe / PayFast
+* **Payments:** Stripe / SnapScan / Ozow (Instant EFT) / PayFast
 
 ---
 

@@ -9,10 +9,14 @@ Provide a frictionless, fast, and visually appetizing mobile-first ordering expe
 ## 4. Sitemap
 - [x] menu - The main menu browsing experience with scrollspy categories and quick-add
 - [x] item-customization - The PDP bottom sheet for selecting modifiers
+- [x] rewards-loyalty - The loyalty and rewards status overview screen
+- [x] order-history - The log of past orders with reorder capability
 - [x] cart - The order review and cart summary
 - [x] checkout - The final checkout and address selection page
 - [x] home - The user dashboard with re-order and rewards
 - [x] order-tracking - Live order status
+- [x] login - Phone number entry for authentication
+- [x] otp-verification - 6 digit OTP input code screen
 
 ## 5. Roadmap
 1. Generate the Menu Browsing screen (menu)

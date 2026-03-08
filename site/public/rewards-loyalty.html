@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#e5b224",
+                        "background-light": "#f8f7f6",
+                        "background-dark": "#211d11",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<title>Phuket Thai - Rewards</title>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen flex flex-col items-center">
+<!-- Mobile Container (iPhone mimic) -->
+<div class="relative w-full max-w-[430px] min-h-screen bg-background-light dark:bg-background-dark flex flex-col shadow-2xl overflow-hidden">
+<!-- Header -->
+<header class="flex items-center justify-between px-6 pt-12 pb-4 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md sticky top-0 z-20">
+<button class="text-slate-900 dark:text-slate-100">
+<span class="material-symbols-outlined">arrow_back_ios</span>
+</button>
+<h1 class="text-lg font-bold tracking-tight">Rewards</h1>
+<button class="text-slate-900 dark:text-slate-100">
+<span class="material-symbols-outlined">info</span>
+</button>
+</header>
+<!-- Main Content -->
+<main class="flex-1 overflow-y-auto pb-32">
+<!-- Hero Reward Status -->
+<section class="flex flex-col items-center px-6 py-8">
+<div class="relative flex items-center justify-center">
+<!-- Thai Gold Circular Badge -->
+<div class="w-48 h-48 rounded-full bg-primary flex flex-col items-center justify-center shadow-xl shadow-primary/30 border-8 border-white dark:border-slate-800">
+<span class="text-4xl font-bold text-white">120</span>
+<span class="text-sm font-medium text-white/90 uppercase tracking-widest">Points</span>
+</div>
+<!-- Decorative Ring -->
+<div class="absolute inset-0 rounded-full border-2 border-primary/20 scale-125"></div>
+</div>
+<div class="mt-6 text-center">
+<p class="text-slate-500 dark:text-slate-400 font-medium">Current Balance</p>
+<h2 class="text-2xl font-bold mt-1">Phuket Thai Member</h2>
+</div>
+</section>
+<!-- Progress Bar Section -->
+<section class="px-6 py-4">
+<div class="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700">
+<div class="flex justify-between items-end mb-3">
+<div>
+<p class="text-sm font-semibold text-primary">Next Reward</p>
+<h3 class="text-base font-bold">30 Points to Free Spring Rolls</h3>
+</div>
+<p class="text-sm font-medium text-slate-500">120 / 150</p>
+</div>
+<div class="w-full bg-slate-100 dark:bg-slate-700 h-3 rounded-full overflow-hidden">
+<div class="bg-primary h-full rounded-full" style="width: 80%"></div>
+</div>
+</div>
+</section>
+<!-- Rewards Grid -->
+<section class="px-6 py-4">
+<h3 class="text-lg font-bold mb-4">Available Rewards</h3>
+<div class="grid grid-cols-1 gap-4">
+<!-- Reward Card 1 -->
+<div class="bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 flex items-center gap-4">
+<div class="w-20 h-20 rounded-lg overflow-hidden flex-shrink-0 bg-slate-100 dark:bg-slate-700">
+<img class="w-full h-full object-cover opacity-80" data-alt="Golden crispy vegetable spring rolls with dipping sauce" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB9ehS9nHymdNDsFVWe9magJhqq_Phnlgfjv4yt6QwtrNf5i6WJNzSUN9n4ECd4MM1L9CzfVwMNbYpHGMlG-Ms6X5gyFAx-c9h9lCRUOz5rsiHwzVTcXUt1qyZIlLCFPs8yEl8jJH-wOeKLFrNnFXwcZHWna9kFWpNxNhctrycv4cUeFuSPCmiGcpA-vMBh2DQwzgc7dD_OpjgijOyn3hZzhslTxlTbKuubkKf9lgw6uTqf_d6ByNVY-REiTdJLGY848wr1lCbnOrA"/>
+</div>
+<div class="flex-1">
+<h4 class="font-bold">Free Spring Rolls</h4>
+<p class="text-sm text-slate-500 font-medium">150 Points</p>
+<button class="mt-2 w-full py-2 bg-slate-200 dark:bg-slate-700 text-slate-400 dark:text-slate-500 rounded font-bold text-sm cursor-not-allowed" disabled="">
+                                Redeem
+                            </button>
+</div>
+</div>
+<!-- Reward Card 2 -->
+<div class="bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 flex items-center gap-4">
+<div class="w-20 h-20 rounded-lg overflow-hidden flex-shrink-0 bg-primary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-4xl">delivery_dining</span>
+</div>
+<div class="flex-1">
+<h4 class="font-bold">Free Delivery</h4>
+<p class="text-sm text-slate-500 font-medium">200 Points</p>
+<button class="mt-2 w-full py-2 bg-slate-200 dark:bg-slate-700 text-slate-400 dark:text-slate-500 rounded font-bold text-sm cursor-not-allowed" disabled="">
+                                Redeem
+                            </button>
+</div>
+</div>
+<!-- Reward Card 3 -->
+<div class="bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 flex items-center gap-4">
+<div class="w-20 h-20 rounded-lg overflow-hidden flex-shrink-0 bg-slate-100 dark:bg-slate-700">
+<img class="w-full h-full object-cover opacity-80" data-alt="Traditional Thai Pad Thai noodles with shrimp and sprouts" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD4D0LbwntdNFiCYsbw1vhwNu1YmvsTrvSR0Kg7W3EJu7BDGQGs0MOcHpnw1br3RMpvnC5OcFYxvQg-XUuHBYftTJW37y4WIWPs-8e2l98KF3XLS7luXnHTqOKEYzj-WNWgLFOlDk3ehCH1ckPjKPv3egj_jmqE4_c66U6u9fLfKxiiK7fKICFgfR_PiBbhooXxYGdlbXsXMgLj2dkjGc1j_C4HRCFCr8st7a5aNuuFItGyTJ8QQBMVb3jGZ9zWdZVULFkVtWtHLRI"/>
+</div>
+<div class="flex-1">
+<h4 class="font-bold">Free Pad Thai</h4>
+<p class="text-sm text-slate-500 font-medium">500 Points</p>
+<button class="mt-2 w-full py-2 bg-slate-200 dark:bg-slate-700 text-slate-400 dark:text-slate-500 rounded font-bold text-sm cursor-not-allowed" disabled="">
+                                Redeem
+                            </button>
+</div>
+</div>
+</div>
+</section>
+<!-- Bottom Banner -->
+<section class="px-6 py-6 mb-8">
+<div class="bg-primary/10 border border-primary/20 rounded-xl p-4 flex items-center gap-4">
+<span class="material-symbols-outlined text-primary">loyalty</span>
+<p class="text-sm font-medium text-slate-700 dark:text-slate-300">
+                        Earn <span class="text-primary font-bold">10 points</span> for every $1 spent at Phuket Thai.
+                    </p>
+</div>
+</section>
+</main>
+<!-- Bottom Navigation Bar -->
+<nav class="absolute bottom-0 left-0 right-0 border-t border-slate-100 dark:border-slate-800 bg-white/90 dark:bg-slate-900/90 backdrop-blur-lg px-6 pb-8 pt-3 z-30">
+<div class="flex justify-between items-center max-w-sm mx-auto">
+<a class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="text-[10px] font-bold uppercase tracking-tighter">Home</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500" href="#">
+<span class="material-symbols-outlined">restaurant_menu</span>
+<span class="text-[10px] font-bold uppercase tracking-tighter">Menu</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-primary" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">stars</span>
+<span class="text-[10px] font-bold uppercase tracking-tighter">Rewards</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500" href="#">
+<span class="material-symbols-outlined">account_circle</span>
+<span class="text-[10px] font-bold uppercase tracking-tighter">Profile</span>
+</a>
+</div>
+</nav>
+<!-- iOS Home Indicator -->
+<div class="absolute bottom-1 left-1/2 -translate-x-1/2 w-32 h-1 bg-slate-300 dark:bg-slate-700 rounded-full z-40"></div>
+</div>
+</body></html>

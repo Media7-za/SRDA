@@ -33,6 +33,15 @@ Before performing any task you must read:
 /ai/agents/architect_agent.md
 /ai/agents/backend_agent.md
 /docs/PRD.md
+/docs/platform/design_tokens.md
+/docs/tenants/phuket_thai/design_tokens.md
+/docs/component_architecture.md
+/docs/ui_conformance_rules.md
+/docs/screens/customer_app.md
+/docs/screens/dashboard.md
+/docs/screens/owner_portal.md
+/docs/screens/platform_admin.md
+/docs/screens/driver_app.md
 
 These documents define:
 
@@ -70,6 +79,9 @@ Tailwind CSS
 
 UI Components
 Shadcn UI or Headless UI
+
+Charts & Maps
+Recharts, Google Maps API
 
 State Management
 React Query + Zustand
@@ -225,46 +237,32 @@ Use Zustand for:
 
 # Core User Screens
 
-The UI must implement the screens defined in the PRD.
+Core user screens are defined EXCLUSIVELY by the screen contracts in `/docs/screens/*.md`.
 
-Core screens include:
-
-Customer App
-
-```text
-Landing Page
-Menu Page
-Product Details
-Cart
-Checkout
-Order Tracking
-Order History
-Login / Signup
-```
-
-Restaurant Admin
-
-```text
-Dashboard
-Orders Management
-Menu Management
-Analytics
-```
-
-Driver Interface
-
-```text
-Available Deliveries
-Active Delivery
-Navigation / Map
-Delivery History
-```
+You must:
+• Read the specific screen contract for the app you are building.
+• Ensure every route, goal, and layout mode strictly matches the contract.
+• Do not invent screens outside these contracts.
+• If a necessary UI primitive is absent from the component contract (`/docs/component_architecture.md`), stop and request a contract update. DO NOT invent it.
 
 ---
 
 # UI Design Rules
 
 All UI must follow these principles.
+
+Design Token Enforcement
+
+• All colors, spacing, typography, radius, shadows, and motion must come from /docs/platform/design_tokens.md and /docs/tenants/phuket_thai/design_tokens.md
+• Do not invent raw hex codes, arbitrary rounded-* values, or custom shadow values unless the token files are explicitly updated first
+• Status UI must map to semantic state tokens exactly
+• Tailwind classes must be derived from the approved token system
+
+Component & Screen Contract Enforcement
+
+• All components must be built and composed EXACTLY as defined in /docs/component_architecture.md. Do not invent new structural components.
+• Screen compositions must strictly adhere to the allowed and forbidden components specified in the relevant screen contract (e.g., /docs/screens/customer_app.md).
+• Do not alter required slots, allowed states, or token bindings.
 
 Consistency
 
@@ -476,6 +474,15 @@ QA Agent will test:
 • UI flows
 • user journeys
 • API integration
+
+And specifically for UI Conformance, QA will issue a PASS/FAIL report on:
+• Token Conformance
+• Component Usage
+• Screen Layout
+• State Coverage
+• Accessibility
+
+Any **FAIL** must be corrected by you before work is considered complete.
 
 ---
 

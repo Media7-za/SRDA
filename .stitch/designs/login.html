@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#e5b224",
+                        "background-light": "#f8f7f6",
+                        "background-dark": "#211d11",
+                        "slate-custom": "#64748B",
+                        "charcoal": "#1A1A1A"
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<title>Phuket Thai Authentication</title>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased">
+<!-- Main Container -->
+<div class="relative flex h-screen w-full flex-col bg-background-light dark:bg-background-dark overflow-hidden max-w-[430px] mx-auto">
+<!-- Header -->
+<header class="flex items-center px-4 pt-6 pb-2 justify-between">
+<button class="flex items-center justify-center size-10 rounded-full hover:bg-primary/10 transition-colors">
+<span class="material-symbols-outlined text-slate-900 dark:text-slate-100">arrow_back_ios_new</span>
+</button>
+<div class="flex-1 flex justify-center pr-10">
+<div class="flex items-center gap-2">
+<div class="size-8 bg-primary rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-charcoal text-xl">restaurant</span>
+</div>
+<span class="font-bold text-lg tracking-tight text-slate-900 dark:text-slate-100">Phuket Thai</span>
+</div>
+</div>
+</header>
+<!-- Content Body -->
+<main class="flex-1 flex flex-col px-6 pt-12">
+<!-- Welcome Heading -->
+<div class="mb-8">
+<h1 class="text-[32px] font-bold leading-tight text-slate-900 dark:text-slate-100 mb-2">Welcome Back</h1>
+<p class="text-slate-custom dark:text-slate-400 text-base leading-relaxed">
+                    Enter your phone number to continue to Phuket Thai.
+                </p>
+</div>
+<!-- Input Section -->
+<div class="flex flex-col gap-4">
+<div class="flex gap-3">
+<!-- Country Code Selector -->
+<div class="flex flex-col w-24">
+<label class="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2 px-1">Code</label>
+<div class="relative">
+<select class="form-select w-full h-14 bg-white dark:bg-background-dark border border-primary/20 dark:border-primary/40 rounded-xl px-4 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-primary focus:border-primary appearance-none transition-all">
+<option>+66</option>
+<option>+1</option>
+<option>+44</option>
+<option>+65</option>
+</select>
+<div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+<span class="material-symbols-outlined text-sm">expand_more</span>
+</div>
+</div>
+</div>
+<!-- Phone Input -->
+<div class="flex flex-col flex-1">
+<label class="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2 px-1 text-left">Phone Number</label>
+<input class="form-input w-full h-14 bg-white dark:bg-background-dark border border-primary/20 dark:border-primary/40 rounded-xl px-4 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:ring-2 focus:ring-primary focus:border-primary transition-all text-lg" placeholder="000 000 0000" type="tel"/>
+</div>
+</div>
+<!-- Terms/Disclaimer -->
+<p class="text-slate-custom dark:text-slate-500 text-xs mt-2 leading-normal px-1">
+                    By continuing, you agree to Phuket Thai's <span class="text-primary font-medium">Terms of Service</span> and <span class="text-primary font-medium">Privacy Policy</span>. We'll send you a verification code via SMS.
+                </p>
+</div>
+</main>
+<!-- Fixed Bottom Action Area -->
+<footer class="p-6 pb-12">
+<button class="w-full h-14 bg-primary hover:bg-primary/90 text-charcoal font-bold text-lg rounded-xl shadow-lg shadow-primary/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2">
+                Send Code
+                <span class="material-symbols-outlined font-bold">arrow_forward</span>
+</button>
+</footer>
+<!-- Decorative Pattern (Subtle) -->
+<div class="absolute -top-24 -right-24 size-64 bg-primary/5 rounded-full blur-3xl -z-10"></div>
+<div class="absolute top-1/2 -left-24 size-64 bg-primary/5 rounded-full blur-3xl -z-10"></div>
+</div>
+</body></html>

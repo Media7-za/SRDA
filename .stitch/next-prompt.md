@@ -1,22 +1,43 @@
----
-page: rewards-loyalty
----
-A loyalty and rewards status screen for a Thai restaurant Mobile App.
+A powerful, high-efficiency Restaurant Admin Dashboard designed for live kitchen operations and business management.
 
 **DESIGN SYSTEM (REQUIRED):**
-- **Platform**: Mobile-first web app (PWA), 390x844 resolution
-- **Theme**: Clean, modern, bright with warm energetic accents
-- **Background**: Off-White (#F8F9FA) for main body, Solid White (#FFFFFF) for cards and modals 
-- **Primary Accent / Brand Color**: Thai Gold (#E6B325) for high-intent actions, active states, and bottom nav highlights
-- **Text Primary**: Charcoal Noir (#1A1A1A) for headings and main reading text
-- **Text Secondary**: Slate Gray (#64748B) for descriptions, disabled states, and subtitles
-- **Typography**: Modern Sans-Serif (Inter or Roboto), bold readable headings 
-- **Corners**: Gently rounded (12px to 16px) for cards.
+- **Platform:** Desktop-first Web App (Responsive for Tablet/Mobile use)
+- **Theme:** Clean, professional, high-contrast for readability in busy kitchen environments
+- **Background:** Soft Gray (#F3F4F6) for page, Solid White (#FFFFFF) for data cards
+- **Primary Accent:** Thai Gold (#D9A520) for branding and active navigation
+- **Secondary Accent:** Success Green (#10B981) for online status, Alert Red (#EF4444) for urgent orders
+- **Typography:** Inter Sans-Serif, tabular figures for data
+- **Corners:** 8px to 12px for a more precise, professional feel
+- **Elevation:** Subtle shadows to distinguish between different widgets and panels
 
 **Page Structure:**
-1. **Header:** Title "Rewards" centered at the top.
-2. **Points Balance Hero:** Large circular graphic or badge showing "Current Balance: 120 Points" in gold.
-3. **Reward Progress Tracker:** Visual tracker "30 Points to Free Spring Rolls" with a progress bar.
-4. **Redeemable Items Grid:** A grid or list of cards for rewards (e.g., Spring Rolls 150 pts, Free Delivery 200 pts, Pad Thai 500 pts) with greyed out "Redeem" buttons for unreachable items and active Thai Gold buttons for reachable items.
-5. **How to Earn Text:** A simple text banner at the bottom showing "Earn 10 points for every $1 spent".
-6. **Bottom Navigation Bar:** Fixed bottom bar with 4 icons: Home, Menu, Rewards (Active - Gold), Search.
+1. **Sidebar Navigation:**
+   - Navigation links: Live Orders (Active), Menu Management, Business Analytics, Inventory, and Settings.
+   - Profile section at the bottom with a "Store Open/Closed" toggle switch.
+
+2. **Top Header:**
+   - Global search for orders/customers.
+   - Quick stats strip: Today's Revenue ($1,420), Active Orders (8), Pending Stock Alerts (3).
+   - Date range selector and notification bell.
+
+3. **Active Order Live Feed (Priority):**
+   - A grid of active order cards showing: Order ID, Customer Name, Time elapsed (e.g., "12m ago"), and status badges (New, In Kitchen, Ready).
+   - Quick action buttons on each card: [Ready for Pickup] or [Print Ticket].
+
+4. **Business Performance Widget:**
+   - A simple line chart showing sales trends throughout the day.
+   - "Popular Dishes" leaderboard with dish images and quantity sold.
+
+5. **Quick Store Controls (The "Management Hub"):**
+   - Single-tap ETA adjustment (15 min, 30 min, 45 min).
+   - Kitchen capacity slider.
+
+**Interactions:**
+- Order cards should flash or pulse slightly when in "New" status.
+- State changes (e.g., clicking "Ready") should have immediate visual feedback without page reloads.
+
+**Design Goal:**
+Create a "command center" vibe that feels robust, trustworthy, and extremely fast. It should look as polished as a modern POS system or Stripe's dashboard.
+
+---
+💡 **Tip:** For consistent designs across multiple screens, the `DESIGN.md` file is being used to maintain the Phuket Thai visual identity.

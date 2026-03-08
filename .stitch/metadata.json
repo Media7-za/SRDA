@@ -4,7 +4,7 @@
     "title": "Phuket Thai",
     "visibility": "PRIVATE",
     "createTime": "2026-03-07T15:18:45Z",
-    "updateTime": "2026-03-07T15:58:45Z",
+    "updateTime": "2026-03-07T20:11:45Z",
     "projectType": "PROJECT_DESIGN",
     "origin": "STITCH",
     "deviceType": "MOBILE",
@@ -25,8 +25,8 @@
             "height": 1768
         },
         "item-customization": {
-            "id": "e10e243bcda54b0a81750e6aa80132d9",
-            "sourceScreen": "projects/2107893222241932507/screens/e10e243bcda54b0a81750e6aa80132d9",
+            "id": "ed29795581ec490c95e9ba87b214013a",
+            "sourceScreen": "projects/2107893222241932507/screens/ed29795581ec490c95e9ba87b214013a",
             "x": 820,
             "y": 0,
             "width": 780,
@@ -63,6 +63,38 @@
             "y": 0,
             "width": 780,
             "height": 2140
+        },
+        "login": {
+            "id": "60dd0c4116ee4f94996504e071a3d0a6",
+            "sourceScreen": "projects/2107893222241932507/screens/60dd0c4116ee4f94996504e071a3d0a6",
+            "x": 3280,
+            "y": 0,
+            "width": 780,
+            "height": 1768
+        },
+        "otp-verification": {
+            "id": "1cec5f2373134c4c98c97027c8ef68ff",
+            "sourceScreen": "projects/2107893222241932507/screens/1cec5f2373134c4c98c97027c8ef68ff",
+            "x": 4100,
+            "y": 0,
+            "width": 780,
+            "height": 1768
+        },
+        "rewards-loyalty": {
+            "id": "85c52f454e854f469ccb93202a663641",
+            "sourceScreen": "projects/2107893222241932507/screens/85c52f454e854f469ccb93202a663641",
+            "x": 0,
+            "y": 1800,
+            "width": 780,
+            "height": 2664
+        },
+        "order-history": {
+            "id": "4f8d65bbfe864a72bca18f5673eb2dd1",
+            "sourceScreen": "projects/2107893222241932507/screens/4f8d65bbfe864a72bca18f5673eb2dd1",
+            "x": -2460,
+            "y": 0,
+            "width": 780,
+            "height": 2036
         }
     },
     "metadata": {
