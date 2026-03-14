@@ -1,0 +1,57 @@
+name: restaurant_direct_driver
+description: Driver App for Restaurant Direct Platform
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.1.0 <4.0.0'
+  flutter: '>=3.16.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # State Management (PRD §3 - Canonical)
+  flutter_riverpod: ^2.4.9
+  riverpod_annotation: ^2.3.3
+  
+  # Navigation (PRD §3 - Canonical)
+  go_router: ^13.0.0
+  
+  # Networking (PRD §3 - Canonical)
+  dio: ^5.4.0
+  
+  # Secure Storage (PRD §15 Invariant #7)
+  flutter_secure_storage: ^9.0.0
+  
+  # Maps & Location (PRD §7, §10)
+  google_maps_flutter: ^2.5.0
+  geolocator: ^10.1.0
+  background_locator_2: ^3.0.0
+  
+  # External Navigation (PRD §7)
+  url_launcher: ^6.2.0
+  
+  # Push Notifications (PRD §11)
+  firebase_core: ^2.24.2
+  firebase_messaging: ^14.7.9
+  
+  # Utilities
+  equatable: ^2.0.5
+  json_annotation: ^4.8.1
+  intl: ^0.18.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.1
+  build_runner: ^2.4.8
+  json_serializable: ^6.7.1
+  riverpod_generator: ^2.3.9
+
+flutter:
+  uses-material-design: true
+  
+  # Assets placeholder
+  # assets:
+  #   - assets/images/

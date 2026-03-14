@@ -41,7 +41,7 @@ The assigned agent must read these before doing any work:
 - `/ai/architecture.md`
 - `/ai/implementation_decisions.md`
 - `/ai/agents/database_agent.md`
-- `/docs/PRD.md`
+- `/docs/PRD_Core.md`
 
 If any required file is missing, stop and report the blocker.
 
@@ -298,7 +298,7 @@ Execute this task strictly according to:
 - `/ai/agent_rules.md`
 - `/ai/implementation_decisions.md`
 - `/ai/agents/database_agent.md`
-- `/docs/PRD.md`
+- `/docs/PRD_Core.md`
 
 Do not invent architecture, APIs, or schema outside approved documents.
 

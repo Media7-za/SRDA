@@ -37,3 +37,6 @@ database/migrations/*.sql
 
 # Turbo
 .turbo/
+
+# Database env
+database/.env

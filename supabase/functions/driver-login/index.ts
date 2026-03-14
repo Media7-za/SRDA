@@ -1,0 +1,115 @@
+import { serve } from "https://deno.land/std@0.177.0/http/server.ts"
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.7"
+
+const corsHeaders = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+}
+
+serve(async (req) => {
+    if (req.method === 'OPTIONS') {
+        return new Response('ok', { headers: corsHeaders })
+    }
+
+    try {
+        const { email, password } = await req.json();
+
+        const supabaseUrl = Deno.env.get('SUPABASE_URL') || '';
+        const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY') || '';
+        const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
+
+        const supabase = createClient(supabaseUrl, supabaseAnonKey);
+        const serviceClient = createClient(supabaseUrl, supabaseServiceKey);
+
+        // 1. Sign in with password to verify credentials
+        const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+            email,
+            password,
+        });
+
+        if (authError || !authData.user) {
+            throw { code: 'UNAUTHORIZED', message: 'Invalid email or password', status: 401 };
+        }
+
+        // 2. Fetch Driver Details
+        const { data: driver, error: driverError } = await serviceClient
+            .from('drivers')
+            .select('id, restaurant_id, user:users(role)')
+            .eq('user_id', authData.user.id)
+            .single();
+
+        if (driverError || !driver) {
+            throw { code: 'FORBIDDEN', message: 'User is not a registered driver', status: 403 };
+        }
+
+        // 3. Update app_metadata if missing (Service Role)
+        // This ensures the JWT issued in the next refresh cycle (or current if we force) has the claims.
+        const metadata = authData.user.app_metadata || {};
+        if (!metadata.driver_id || !metadata.restaurant_id || metadata.role !== 'driver') {
+            await serviceClient.auth.admin.updateUserById(authData.user.id, {
+                app_metadata: {
+                    ...metadata,
+                    role: 'driver',
+                    driver_id: driver.id,
+                    restaurant_id: driver.restaurant_id
+                }
+            });
+
+            // Since we just updated metadata, we need to refresh the session 
+            // to get a JWT with the new claims immediately.
+            const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession({
+                refresh_token: authData.session!.refresh_token
+            });
+
+            if (!refreshError && refreshData.session) {
+                return new Response(
+                    JSON.stringify({
+                        success: true,
+                        data: {
+                            token: refreshData.session.access_token,
+                            refresh_token: refreshData.session.refresh_token,
+                            expires_at: new Date(Date.now() + refreshData.session.expires_in * 1000).toISOString(),
+                            user: {
+                                id: authData.user.id,
+                                driver_id: driver.id,
+                                restaurant_id: driver.restaurant_id
+                            }
+                        }
+                    }),
+                    { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
+                );
+            }
+        }
+
+        return new Response(
+            JSON.stringify({
+                success: true,
+                data: {
+                    token: authData.session!.access_token,
+                    refresh_token: authData.session!.refresh_token,
+                    expires_at: new Date(Date.now() + authData.session!.expires_in * 1000).toISOString(),
+                    user: {
+                        id: authData.user.id,
+                        driver_id: driver.id,
+                        restaurant_id: driver.restaurant_id
+                    }
+                }
+            }),
+            { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
+        );
+
+    } catch (err: any) {
+        console.error(err);
+        return new Response(
+            JSON.stringify({
+                success: false,
+                data: null,
+                error: {
+                    code: err.code || 'INTERNAL_ERROR',
+                    message: err.message || 'An unexpected error occurred'
+                }
+            }),
+            { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: err.status || 500 }
+        );
+    }
+})

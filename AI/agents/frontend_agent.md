@@ -32,7 +32,7 @@ Before performing any task you must read:
 /ai/agent_rules.md
 /ai/agents/architect_agent.md
 /ai/agents/backend_agent.md
-/docs/PRD.md
+/docs/PRD_Core.md
 /docs/platform/design_tokens.md
 /docs/tenants/phuket_thai/design_tokens.md
 /docs/component_architecture.md

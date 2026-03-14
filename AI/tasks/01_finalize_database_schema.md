@@ -44,7 +44,7 @@ The assigned agent must read these before doing any work:
 - `/ai/architecture.md` — §3 Module Ownership, §4 Commerce Rules, §5 State Machines, §3.10 Location Storage
 - `/ai/agent_rules.md` — engineering rules, naming conventions
 - `/ai/implementation_decisions.md` — payment modes, pay-in-store fields
-- `/docs/PRD.md` — §5 Core Database Schema, §8 Delivery Logic
+- `/docs/PRD_Core.md` — §5 Core Database Schema, §8 Delivery Logic
 
 If any required file is missing, stop and report the blocker.
 
@@ -434,7 +434,7 @@ Execute this task strictly according to:
 - `/ai/architecture.md`
 - `/ai/agent_rules.md`
 - `/ai/implementation_decisions.md`
-- `/docs/PRD.md`
+- `/docs/PRD_Core.md`
 
 Do not invent tables, columns, or relationships outside approved documents.
 

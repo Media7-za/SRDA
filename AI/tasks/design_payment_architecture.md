@@ -35,7 +35,7 @@ Payments are the lifeblood of the platform. The architecture must ensure that ev
 - `/ai/agent_rules.md`
 - `/ai/agents/architect_agent.md`
 - `/ai/implementation_decisions.md` (for payment modes)
-- `/docs/PRD.md`
+- `/docs/PRD_Core.md`
 
 ---
 

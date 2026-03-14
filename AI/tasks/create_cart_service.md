@@ -34,7 +34,7 @@ The cart is the gateway to checkout. Ensuring that cart totals are strictly calc
 - `/ai/context.md`
 - `/ai/agent_rules.md`
 - `/ai/agents/backend_agent.md`
-- `/docs/PRD.md`
+- `/docs/PRD_Core.md`
 
 ---
 

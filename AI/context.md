@@ -288,7 +288,7 @@ migrations
 schema
 
 docs/
-PRD.md
+PRD_Core.md
 architecture.md
 ui_screens.md
 
@@ -406,7 +406,7 @@ South African Rand (ZAR)
 Before generating code, AI agents must always read:
 
 /ai/context.md
-/docs/PRD.md
+/docs/PRD_Core.md
 /ai/agent_rules.md
 
 These documents define the system architecture and development protocols.

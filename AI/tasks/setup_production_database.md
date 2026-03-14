@@ -33,7 +33,7 @@ The production database is the lifeblood of the application. It needs to be high
 
 - `/ai/context.md`
 - `/ai/agents/devops_agent.md`
-- `/docs/PRD.md`
+- `/docs/PRD_Core.md`
 
 ---
 

@@ -8,7 +8,8 @@
 > - Platform Super-Admin Panel → `/docs/PRD_Platform_Admin.md`
 > - Restaurant Dashboard (operational) → `/docs/PRD_Dashboard.md`
 > - Driver App → `/docs/PRD_Driver.md`
-> - Core product / customer app → `/docs/PRD.md`
+> - Core product → `/docs/PRD_Core.md`
+> - Customer App → `/docs/PRD_Customer_App.md`
 
 ---
 

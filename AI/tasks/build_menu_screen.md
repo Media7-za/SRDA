@@ -34,7 +34,7 @@ This is the core discovery interface. It must be highly responsive, visually app
 - `/ai/context.md`
 - `/ai/agent_rules.md`
 - `/ai/agents/frontend_agent.md`
-- `/docs/PRD.md`
+- `/docs/PRD_Core.md`
 
 ---
 

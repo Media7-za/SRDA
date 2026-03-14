@@ -33,7 +33,7 @@ The splash screen is the very first impression of the brand. It needs to be fast
 
 - `/ai/context.md`
 - `/ai/agents/frontend_agent.md`
-- `/docs/PRD.md`
+- `/docs/PRD_Core.md`
 
 ---
 

@@ -33,7 +33,7 @@ Real-time tracking is active, but push notifications passively alert users that 
 
 - `/ai/context.md`
 - `/ai/agent_rules.md`
-- `/docs/PRD.md`
+- `/docs/PRD_Core.md`
 
 ---
 

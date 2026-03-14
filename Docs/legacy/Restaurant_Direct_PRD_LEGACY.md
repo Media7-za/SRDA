@@ -1,5 +1,10 @@
-# PRD — Single Restaurant Delivery App
-(Uber Eats alternative without marketplace fees)
+# [LEGACY] PRD — Single Restaurant Delivery App
+> [!CAUTION]
+> **DEPRECATED**: This document is legacy. 
+> The canonical source of truth has been split into:
+> - [PRD_Core.md](../PRD_Core.md) (Domain Logic)
+> - [PRD_Customer_App.md](../PRD_Customer_App.md) (UX Logic)
+
 
 ## Table of Contents
 1. [Product Overview](#1-product-overview)

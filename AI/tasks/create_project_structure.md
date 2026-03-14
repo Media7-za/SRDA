@@ -34,7 +34,7 @@ A clean, modular structure ensures the codebase remains maintainable as the proj
 - `/ai/context.md`
 - `/ai/agent_rules.md`
 - `/ai/agents/backend_agent.md`
-- `/docs/PRD.md`
+- `/docs/PRD_Core.md`
 
 ---
 

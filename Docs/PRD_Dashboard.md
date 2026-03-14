@@ -7,6 +7,14 @@
 - v2: concurrency protection, fulfillment type model, delivery state ownership, closing edge case policy, cancellation reasons, offline handling, multi-location scaffolding.
 - v3: driver assignment collision constraint, confirmed-order cancellation policy (manager approval), GPS staleness detection + UI warning.
 - v4: Opening Hours module removed from Restaurant Dashboard — moved exclusively to Admin Panel.
+- v5: High-fidelity operational patterns: high-contrast dark mode, kitchen pressure alerts, LATE tagging, and progressive prep states.
++
++> **Related PRDs:**
++> - Core Product → `/docs/PRD_Core.md`
++> - Customer App → `/docs/PRD_Customer_App.md`
++> - Driver App → `/docs/PRD_Driver.md`
++> - Owner Portal → `/docs/PRD_Owner_Portal.md`
++> - Platform Admin → `/docs/PRD_Platform_Admin.md`
 
 ---
 
@@ -55,6 +63,19 @@ It is **not** the customer-facing app. It is **not** the platform super-admin pa
 
 ### Multi-Location Note
 The MVP supports a **single location per restaurant**. However, `restaurant_id` must appear on all core entities (orders, menu items, promotions, drivers) to ensure the schema can accommodate multi-location expansion without redesign. No location-switching UI is built in MVP.
+
+### 1.3 Operational Theming & Accessibility
+
+To ensure high readability and reduced eye strain under kitchen lighting, the dashboard must adhere to a **High-Contrast Dark Mode** theme.
+
+**Base Palette:**
+- Background (Surface): `#121826`
+- Card Background: `#1e2533`
+- Border (Neutral): `#2d3748`
+- Text (Primary): `#ffffff`
+- Brand Gold (Operational Accent): `#FBBC05`
+
+**Requirement:** All operational buttons must provide a minimum hit target of **48px height** or occupy the **full width** of the parent card to support fast-paced touch interaction.
 
 ---
 
@@ -247,6 +268,24 @@ When a staff member taps an action button:
 2. The card moves to the next column optimistically.
 3. If the API call fails (including version conflict — see Section 11), the card reverts and an error toast is shown.
 4. React Query `invalidateQueries` is called on success to sync server truth.
+
+### 4.8 Kitchen Under Pressure Alert
+
+When the number of active, non-completed orders (New + Preparing + Ready) exceeds a configurable threshold (Default: **15**), the dashboard must display a high-visibility alert banner.
+
+- **Banner Style:** Red background with a pulsing dot indicator.
+- **Message:** *"⚠️ Kitchen Under Pressure — [X] Active Orders"*
+- **Behaviour:** Non-blocking, but sticky at the top of the feed.
+
+### 4.9 LATE Order Tagging
+
+The dashboard must automatically highlight orders that are exceeding their promised preparation time.
+
+- **Trigger:** Time elapsed > (`estimated_ready_minutes` * 1.2).
+- **Visual Feedback:** 
+    - Card border switches to **Red**.
+    - Pulsing **(LATE)** tag appears next to the Order ID.
+    - Background shift to a darker red tint (`#2d1a1a`).
 
 ---
 
@@ -616,7 +655,7 @@ All responses use the global error envelope:
 ### Orders
 | Method | Endpoint | Body | Description |
 |---|---|---|---|
-| GET | `/api/orders?restaurant_id=&date=today` | — | Today's orders for live feed |
+| GET | `/api/orders?restaurant_id=&date=today` | — | Today's orders for live feed. Includes `estimated_progress` (0-100) and `is_stale` flag. |
 | PATCH | `/api/orders/:id/status` | `{ status, version }` | Advance order status (with concurrency check) |
 | PATCH | `/api/orders/:id/estimate` | `{ estimated_ready_minutes }` | Update estimate (no version check) |
 | POST | `/api/orders/:id/cancel` | `{ reason, other_reason?, manager_pin? }` | Cancel order — PIN required for confirmed orders |
@@ -663,6 +702,8 @@ confirmed
 preparing
   → ready_for_pickup  (Mark Ready)
   → [cancellation NOT permitted at this stage or beyond]
+
+**Note on Preparing:** This state is progressive. The UI should reflect real-time progress via the `estimated_progress` field if provided by the backend or simulated via local timers.
 
 ready_for_pickup
   → out_for_delivery  (Assign Driver — delivery orders only)
@@ -864,4 +905,4 @@ AI agents must not implement the following. They are explicitly deferred.
 
 ---
 
-*End of Restaurant Dashboard PRD v2*
+*End of Restaurant Dashboard PRD v5*

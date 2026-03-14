@@ -96,7 +96,7 @@ See [AI/architecture.md](./AI/architecture.md) for the full architecture specifi
 
 ## Documentation
 
-- [Product Requirements](./docs/PRD.md)
+- [Product Requirements](./docs/PRD_Core.md)
 - [Architecture Specification](./AI/architecture.md)
 - [Agent Rules](./AI/agent_rules.md)
 - [Implementation Decisions](./AI/implementation_decisions.md)

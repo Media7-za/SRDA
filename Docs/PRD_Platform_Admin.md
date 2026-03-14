@@ -8,7 +8,7 @@
 > - Restaurant Owner Portal → `/docs/PRD_Owner_Portal.md`
 > - Restaurant Dashboard (operational) → `/docs/PRD_Dashboard.md`
 > - Driver App → `/docs/PRD_Driver.md`
-> - Core product / customer app → `/docs/PRD.md`
+> - Core product → `/docs/PRD_Core.md`
 
 ---
 

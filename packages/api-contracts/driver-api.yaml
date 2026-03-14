@@ -1,0 +1,628 @@
+openapi: 3.0.3
+info:
+  title: Restaurant Direct - Driver API
+  version: 1.0.0-mvp
+  description: |
+    Canonical API for the Driver App (Flutter).
+    Enforces Order Lifecycle state machine and Domain Invariants from PRD_Core.md.
+    All responses wrapped in global envelope: { success, data, error }.
+servers:
+  - url: https://api.restaurant-direct.com
+    description: Production
+  - url: https://dev-api.restaurant-direct.com
+    description: Development
+
+security:
+  - BearerAuth: []
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT issued via /api/auth/driver/login. Contains role=driver.
+
+  schemas:
+    # --- Global Envelopes (PRD Driver Section 13) ---
+    SuccessEnvelope:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: object
+          nullable: true
+        error:
+          type: object
+          nullable: true
+
+    PaginationMetadata:
+      type: object
+      properties:
+        total_count:
+          type: integer
+          example: 154
+        total_pages:
+          type: integer
+          example: 8
+        current_page:
+          type: integer
+          example: 1
+        limit:
+          type: integer
+          example: 20
+        has_more:
+          type: boolean
+          example: true
+
+    SuccessListEnvelope:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: array
+          items:
+            type: object
+        pagination:
+          $ref: '#/components/schemas/PaginationMetadata'
+        error:
+          type: object
+          nullable: true
+
+    ErrorEnvelope:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        data:
+          type: object
+          nullable: true
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              description: "Canonical error code (e.g., STATE_CONFLICT, RE_AUTH_REQUIRED, FORBIDDEN)"
+              example: STATE_CONFLICT
+            message:
+              type: string
+              example: "Cannot transition from 'delivered' to 'picked_up'"
+
+    # --- Domain Models ---
+    Driver:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        status:
+          type: string
+          enum: [online, offline]
+        current_location:
+          $ref: '#/components/schemas/GeoPoint'
+          nullable: true
+        last_location_at:
+          type: string
+          format: date-time
+          nullable: true
+
+    GeoPoint:
+      type: object
+      properties:
+        latitude:
+          type: number
+          format: double
+        longitude:
+          type: number
+          format: double
+
+    Delivery:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        order_short_id:
+          type: string
+          example: "A3F9C1"
+        status:
+          type: string
+          enum: [assigned, picked_up, on_the_way, delivered, failed, cancelled]
+        pickup_address:
+          type: string
+        dropoff_address:
+          type: string
+        dropoff_coordinates:
+          $ref: '#/components/schemas/GeoPoint'
+        customer_name:
+          type: string
+        customer_contact_phone: # GAP FIX: Added for customer contact flow
+          type: string
+          description: "Masked or direct number based on tenant config"
+        special_instructions:
+          type: string
+          nullable: true
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              quantity:
+                type: integer
+        created_at:
+          type: string
+          format: date-time
+
+    EarningsSummary:
+      type: object
+      properties:
+        week_total:
+          type: number
+          format: decimal
+        month_total:
+          type: number
+          format: decimal
+        delivery_count:
+          type: integer
+
+    EarningsRecord:
+      type: object
+      properties:
+        order_id:
+          type: string
+          format: uuid
+        order_short_id:
+          type: string
+          example: "A3F9C1"
+        fee:
+          type: number
+          format: decimal
+        currency:
+          type: string
+          example: "ZAR"
+        completed_at:
+          type: string
+          format: date-time
+
+  responses:
+    Unauthorized:
+      description: JWT missing or invalid
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+          examples:
+            TokenExpired:
+              value:
+                success: false
+                data: null
+                error:
+                  code: RE_AUTH_REQUIRED
+                  message: "Session expired. Please log in again."
+            InvalidToken:
+              value:
+                success: false
+                data: null
+                error:
+                  code: UNAUTHORIZED
+                  message: "Invalid token"
+    Conflict:
+      description: State machine violation or resource conflict
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+          example:
+            success: false
+            data: null
+            error:
+              code: STATE_CONFLICT
+              message: "Delivery was cancelled by restaurant while driver was offline"
+    Forbidden:
+      description: Role violation or feature gated
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+          example:
+            success: false
+            data: null
+            error:
+              code: FORBIDDEN
+              message: "Earnings feature is disabled for this tenant"
+
+paths:
+  # --- Authentication ---
+  /api/auth/driver/login:
+    post:
+      summary: Driver Login
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email: { type: string, format: email }
+                password: { type: string }
+      responses:
+        200:
+          description: JWT issued
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          token: { type: string }
+                          expires_at: { type: string, format: date-time }
+        401:
+          $ref: '#/components/responses/Unauthorized'
+
+  /api/auth/driver/logout:
+    post:
+      summary: Driver Logout
+      description: Invalidate session and clear FCM tokens (server-side).
+      tags: [Auth]
+      security: [BearerAuth]
+      responses:
+        200:
+          description: Logged out
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessEnvelope'
+
+  /api/auth/driver/refresh: # GAP FIX: Added for session continuity
+    post:
+      summary: Refresh JWT
+      description: |
+        Allows extending session without re-login. 
+        Critical for shifts spanning >24h or background expiry.
+      tags: [Auth]
+      security: [BearerAuth]
+      responses:
+        200:
+          description: New JWT issued
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          token: { type: string }
+                          expires_at: { type: string, format: date-time }
+        401:
+          $ref: '#/components/responses/Unauthorized'
+
+  # --- Driver Profile & Status ---
+  /api/drivers/{id}:
+    get:
+      summary: Get Driver Profile
+      tags: [Driver]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        200:
+          description: Driver profile + current status
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Driver'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+
+  /api/drivers/{id}/status:
+    patch:
+      summary: Toggle Online/Offline
+      tags: [Driver]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum: [online, offline]
+      responses:
+        200:
+          description: Status updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessEnvelope'
+        409: # GAP FIX: Prevent offline during active delivery
+          $ref: '#/components/responses/Conflict'
+          description: "Cannot go offline while a delivery is in progress"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+
+  # --- GPS Tracking ---
+  /api/drivers/{id}/location:
+    post:
+      summary: Post GPS Location
+      tags: [Location]
+      description: |
+        Posts single location point. 
+        Offline queue must flush sequentially (oldest first).
+        Only posts when status=online AND active delivery exists.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                latitude: { type: number, format: double }
+                longitude: { type: number, format: double }
+                recorded_at: { type: string, format: date-time }
+                delivery_id: { type: string, format: uuid, nullable: true }
+      responses:
+        200:
+          description: Location recorded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessEnvelope'
+        400:
+          description: Invalid coordinates or timestamp drift
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+
+  # --- Device Management ---
+  /api/drivers/{id}/fcm-token:
+    post:
+      summary: Register FCM Token
+      tags: [Notifications]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token: { type: string }
+                platform: { type: string, enum: [android, ios] }
+      responses:
+        200:
+          description: Token registered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessEnvelope'
+
+  # --- Deliveries ---
+  /api/drivers/{id}/deliveries/active:
+    get:
+      summary: Get Active Delivery
+      tags: [Deliveries]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        200:
+          description: Active delivery details (or null)
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Delivery'
+                        nullable: true
+        401:
+          $ref: '#/components/responses/Unauthorized'
+
+  /api/deliveries/{id}:
+    get:
+      summary: Get Delivery Details
+      tags: [Deliveries]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        200:
+          description: Full delivery snapshot
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Delivery'
+        403:
+          description: Driver not assigned to this delivery
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+
+  /api/deliveries/{id}/status:
+    patch:
+      summary: Update Delivery Status
+      tags: [Deliveries]
+      description: |
+        CRITICAL: Enforces State Machine.
+        Allowed transitions: 
+        assigned → picked_up
+        picked_up → on_the_way
+        on_the_way → delivered
+        
+        Returns 409 Conflict if state changed remotely (e.g. cancelled by dashboard).
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum: [picked_up, on_the_way, delivered]
+      responses:
+        200:
+          description: Status updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessEnvelope'
+        409: # GAP FIX: Critical for offline conflict resolution
+          $ref: '#/components/responses/Conflict'
+        403:
+          description: Invalid transition (e.g. skipping state)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+
+  /api/drivers/{id}/deliveries:
+    get:
+      summary: Delivery History
+      tags: [Deliveries]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string, format: uuid }
+        - in: query
+          name: status
+          schema: { type: string, enum: [completed, failed] }
+        - in: query
+          name: page
+          schema: { type: integer, default: 1 }
+        - in: query
+          name: limit
+          schema: { type: integer, default: 20 }
+      responses:
+        200:
+          description: Paginated list
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessListEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Delivery'
+
+  # --- Earnings (Tenant Gated) ---
+  /api/drivers/{id}/earnings/summary:
+    get:
+      summary: Get Earnings Summary
+      tags: [Earnings]
+      description: Returns 403 if tenant has earnings_enabled=false
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        200:
+          description: Earnings data
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/EarningsSummary'
+        403:
+          $ref: '#/components/responses/Forbidden'
+
+  /api/drivers/{id}/earnings/history:
+    get:
+      summary: Get Earnings History
+      tags: [Earnings]
+      description: Returns paginated list of earnings records.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string, format: uuid }
+        - in: query
+          name: page
+          schema: { type: integer, default: 1 }
+        - in: query
+          name: limit
+          schema: { type: integer, default: 20 }
+      responses:
+        200:
+          description: Paginated earnings list
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessListEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/EarningsRecord'
+        403:
+          $ref: '#/components/responses/Forbidden'

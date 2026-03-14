@@ -1,27 +1,23 @@
-# PRD — Single Restaurant Delivery App
-(Uber Eats alternative without marketplace fees)
+# PRD Authority Hierarchy
 
-## Table of Contents
-1. [Product Overview](#1-product-overview)
-2. [Target Users](#2-target-users)
-3. [MVP Feature Set](#3-mvp-feature-set)
-4. [Restaurant Dashboard](#4-restaurant-dashboard)
-5. [Core Database Schema (12-Table)](#5-core-database-schema-12-table)
-6. [Order Lifecycle](#6-order-lifecycle)
-7. [Payments](#7-payments)
-8. [Delivery Logic (MVP)](#8-delivery-logic-mvp)
-9. [Tech Stack (AI Native)](#9-tech-stack-ai-native)
-10. [Success Metrics](#10-success-metrics)
-11. [V2 Features (Later)](#11-v2-features-later)
-12. [Real Strategic Insight](#12-real-strategic-insight)
+PRD_Core.md is the canonical source of truth for:
+
+• system entities
+• enums
+• order lifecycle
+• payment lifecycle
+• domain invariants
+• platform architecture
+
+Surface PRDs (Customer, Dashboard, Driver, Owner Portal, Platform Admin)
+may reference but must not redefine these rules.
 
 ---
 
-> **UX Blueprints (per-tenant):** Screen flows, component architecture, and interaction rules live in tenant-specific docs.
-> See [`Docs/tenants/`](./tenants/) — e.g. [Phuket Thai UX Blueprint](./tenants/phuket-thai/UX_Blueprint.md).
-> New tenants: copy [`_tenant_template/`](./tenants/_tenant_template/) as a starting point.
-
----
+# PRD — Core Product & Domain Logic
+**Platform:** Restaurant Direct
+**Stage:** MVP
+**Audience:** All AI Coding Agents — this is the root documentation for system truth.
 
 ## 1. Product Overview
 
@@ -38,98 +34,49 @@ Typical marketplaces charge 20–35% per order. This system allows restaurants t
 
 ---
 
-## 2. Target Users
+## 2. Tech Stack (AI Native)
 
-### Customers
-People ordering food.
+Modern stack most YC companies use:
 
-**Needs:**
-* Fast ordering
-* Easy payment
-* Order tracking
-* Saved addresses
+* **Frontend Web:** Next.js, Tailwind
+* **Mobile:** Flutter
+* **Backend:** Supabase
+  * *Includes:* PostgreSQL, auth, storage, realtime
+* **Maps:** Google Maps API
+* **Payments:** Stripe / SnapScan / Ozow (Instant EFT) / PayFast
 
-### Restaurant Staff
-**Needs:**
+---
+
+## 3. Canonical Roles (UserRole Enum)
+
+This is the single source of truth for all user roles across the entire platform.
+
+```typescript
+export enum UserRole {
+  PLATFORM_ADMIN     = 'platform_admin',     // Platform operator — manages all tenants
+  RESTAURANT_OWNER   = 'restaurant_owner',   // Tenant owner — manages their restaurant
+  RESTAURANT_STAFF   = 'restaurant_staff',   // Operational staff — uses Dashboard only
+  DRIVER             = 'driver',             // Delivery driver — uses Driver App only
+  CUSTOMER           = 'customer',           // End customer — uses Customer App only
+}
+```
+
+### Needs per Role:
+
+#### Restaurant Staff / Owners
 * See incoming orders
 * Manage menu
 * Update order status
 * Manage hours
 
-### Delivery Drivers (Optional MVP)
-**Needs:**
+#### Delivery Drivers
 * See delivery jobs
 * Navigation
 * Confirm delivery
 
 ---
 
-## 3. MVP Feature Set
-
-### Customer App
-
-**Core features:**
-* **Menu browsing**
-  * Restaurant → Categories → Items → Options
-  * *Example:*
-    * Burgers (Cheeseburger, Double Burger)
-    * Drinks (Coke, Sprite)
-
-* **Cart**
-  * Customers can: add items, customize options, change quantity
-  * *Cart example:*
-    * 1x Double Burger (+ Cheese, + Bacon)
-    * 1x Coke
-
-* **Checkout**
-  * Customer enters: Name, Phone, Address, Delivery / Pickup.
-  * Payment options based on fulfillment:
-    * **Delivery**: Online payment required (Stripe).
-    * **Pickup (Collection)**: Choice of Online payment or Pay In-Store.
-
-* **Order Tracking**
-  * Order status: Pending, Confirmed, Preparing, Ready, Out for delivery, Delivered
-
-### First-Time User Onboarding
-
-When a new user opens the app for the first time:
-
-• Display a welcome loyalty incentive
-• Highlight popular dishes
-• Encourage the first order
-
-Home screen modules must prioritize:
-
-- loyalty signup incentive
-- social proof ("Most Loved")
-- frictionless item discovery
-
----
-
-## 4. Restaurant Dashboard
-
-Restaurant staff needs very simple tools.
-
-### Orders Screen
-Live order feed: New Orders, Preparing, Ready, Completed.
-
-*Example:*
-* Order #2041 (2x Burgers, 1x Chips, Delivery)
-* Buttons: Accept, Start Preparing, Ready, Completed
-* For **Collection + Pay In-Store** orders, an additional "Mark Paid & Complete" action enables staff to collect payment at pickup.
-
-### Menu Management
-Restaurant can: Create categories, Add items, Edit prices, Enable / disable items.
-
-### Opening Hours
-*Example:*
-* Monday - Thursday 11:00 - 20:00
-* Friday - Saturday 11:00 - 20:30
-* Sunday 11:00 - 20:00
-
----
-
-## 5. Core Database Schema (12-Table)
+## 4. Core Database Schema (12-Table)
 
 This schema supports: single restaurant, multi restaurant, delivery, pickup, promotions, and loyalty without needing redesign later.
 
@@ -298,7 +245,7 @@ Tracks points earned or spent.
 
 ---
 
-### Visual ER Diagram
+## 5. Visual ER Diagram
 
 ```mermaid
 erDiagram
@@ -318,106 +265,81 @@ erDiagram
     Loyalty_Accounts ||--o{ Loyalty_Transactions : logs
 ```
 
-### Why This Schema Works So Well
-This structure handles:
-* **Order history:** Orders remain accurate even if menu changes.
-* **Restaurant analytics:** You can calculate top selling items, average order value, repeat customers.
-* **Promotions:** You can answer: Which promo generated the most revenue?
-* **Loyalty:** You can track points earned, points redeemed.
-
-#### A Hidden Scaling Trick (Very Important)
-When platforms like Uber Eats scale, they add an `order_status_history` table:
-* `id`
-* `order_id`
-* `status`
-* `created_at`
-
-This enables detailed analytics, delivery tracking over time, and robust customer notifications.
-
 ---
 
-## 6. Order Lifecycle
+## 6. Order Lifecycle (State Machine)
 
-**State machine:**
+Canonical statuses must follow this exact sequence:
+
 ```
 PENDING → CONFIRMED → PREPARING → READY → OUT_FOR_DELIVERY → DELIVERED
 ```
 
+*   **PENDING**: Initial state after customer checkout.
+*   **CONFIRMED**: Accepted by restaurant staff.
+*   **PREPARING**: Food is being cooked.
+*   **READY**: Food is packed and awaiting collection/delivery.
+*   **OUT_FOR_DELIVERY**: Handled by driver (Delivery only).
+*   **DELIVERED**: Final terminal state.
+*   **CANCELLED**: Terminal state for failed orders.
+
 ---
 
 ## 7. Payments
-
-**Recommended MVP:**
-* Payment providers: Stripe, PayFast (popular in South Africa)
 
 **Payment flow:**
 ```
 Customer checkout → Create payment intent → Payment success → Create order
 ```
 
+*   **Delivery**: Online payment required (Stripe).
+*   **Pickup (Collection)**: Choice of Online payment or Pay In-Store.
+
 ---
 
-## 8. Delivery & Fulfillment Logic (MVP)
-
-Two modes.
+## 8. Delivery & Fulfillment Logic
 
 ### Pickup (Collection)
 * Customer collects from the restaurant.
 * Delivery fee: `0`
-* Payment terms: Customer can choose to pay online (Stripe) or **Pay In-Store** (cash/card at the counter).
+* Payment terms: Customer can choose to pay online (Stripe) or **Pay In-Store**.
 
 ### Restaurant Delivery
-* Restaurant driver delivers to customer.
-* Delivery fee: `flat fee` (example: R25)
-* Payment terms: Online payment strongly required in MVP (no cash on delivery).
-
-**Later:** distance based pricing.
+* Restaurant-owned driver delivers to customer.
+* Delivery fee: `flat fee` (tenant configurable).
+* Payment terms: Online payment required (no cash on delivery).
 
 ---
 
-## 9. Tech Stack (AI Native)
+## 9. Domain Invariants
 
-Modern stack most YC companies use:
-
-* **Frontend Web:** Next.js, Tailwind
-* **Mobile:** Flutter
-* **Backend:** Supabase
-  * *Includes:* PostgreSQL, auth, storage, realtime
-* **Maps:** Google Maps API
-* **Payments:** Stripe / SnapScan / Ozow (Instant EFT) / PayFast
+1.  **Price Snapshots**: Item price must be copied to `order_items` at purchase time.
+2.  **No Direct DB Access**: Frontend applications never query the database directly; all access is via the Backend REST API.
+3.  **Role Scoping**: Every request must be validated against the JWT `restaurant_id` and `role`.
+4.  **Soft Deletion**: Menu items are never hard-deleted; `is_available` is set to `false`.
 
 ---
 
-## 10. Success Metrics
+## 10. Success Metrics (Platform & Restaurant)
 
-### Restaurant metrics:
-* Orders per day
-* Average order value
-* Delivery time
-
-### Customer metrics:
-* Conversion rate
-* Cart abandonment
-* Repeat orders
+*   **Orders per day**
+*   **Average order value (AOV)**
+*   **Delivery time**
+*   **Platform uptime**
 
 ---
 
 ## 11. V2 Features (Later)
 
-After MVP works:
-
-* **Loyalty program:** Earn points, Free meals
-* **Scheduled orders:** Order for later
-* **Delivery driver app:** Driver receives jobs.
-* **Multi-restaurant platform:** Turn it into a marketplace later.
+*   Multi-restaurant platform model.
+*   Scheduled orders.
+*   Distance-based delivery pricing.
+*   Advanced driver routing (TSP).
 
 ---
 
-## 12. Real Strategic Insight
+## 12. Strategic Insight
 
 This model is exploding right now because restaurants hate marketplace fees.
-
 Companies like Uber Eats and DoorDash take 20–35% commission.
-Restaurants are moving toward:
-* Direct ordering
-* Direct customer ownership
+Restaurants are moving toward direct ordering and direct customer ownership.

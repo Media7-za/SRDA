@@ -18,6 +18,7 @@ export async function buildApp() {
     // ── Plugins ──────────────────────────────────────────────────────
     await app.register(cors, {
         origin: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000',
+        methods: ['GET', 'PUT', 'POST', 'PATCH', 'DELETE', 'OPTIONS']
     });
 
     // ── Routes ───────────────────────────────────────────────────────

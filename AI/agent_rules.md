@@ -23,7 +23,7 @@ AI agents must **never deviate from these rules**.
 Before generating any code, the AI agent **must read the following files**:
 
 /ai/context.md
-/docs/PRD.md
+/docs/PRD_Core.md
 /ai/architecture.md
 /ai/implementation_decisions.md
 /ai/agent_rules.md
@@ -372,7 +372,7 @@ Architecture decisions must never be invented.
 All code must align with:
 
 /ai/context.md
-/docs/PRD.md
+/docs/PRD_Core.md
 /ai/architecture.md
 /ai/implementation_decisions.md
 /ai/agent_rules.md

@@ -64,7 +64,7 @@ The assigned agent must read these before doing any work:
 - `/ai/context.md`
 - `/ai/agent_rules.md`
 - `/ai/implementation_decisions.md`
-- `/docs/PRD.md`
+- `/docs/PRD_Core.md`
 
 Add any extra required files for the task:
 
@@ -373,7 +373,7 @@ Execute this task strictly according to:
 - `/ai/context.md`
 - `/ai/agent_rules.md`
 - `/ai/implementation_decisions.md`
-- `/docs/PRD.md`
+- `/docs/PRD_Core.md`
 
 Do not invent architecture, APIs, or schema outside approved documents.
 

@@ -1,5 +1,5 @@
 import React, { ReactNode } from "react"
-import { cn } from "../../utils/cn"
+import { cn } from "../utils/cn"
 import { StatusBadge, StatusVariant } from "./StatusBadge"
 import { PaymentBadge, PaymentVariant } from "./PaymentBadge"
 import { FulfillmentBadge, FulfillmentVariant } from "./FulfillmentBadge"

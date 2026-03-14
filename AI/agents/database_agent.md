@@ -53,7 +53,7 @@ Before performing any task, you must read:
 /ai/architecture.md
 /ai/domain_invariants.md
 /ai/implementation_decisions.md
-/docs/PRD.md
+/docs/PRD_Core.md
 
 These documents define:
 

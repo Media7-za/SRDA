@@ -34,7 +34,7 @@ Secure access to user data and restaurant administration is foundational to trus
 - `/ai/context.md`
 - `/ai/agent_rules.md`
 - `/ai/agents/architect_agent.md`
-- `/docs/PRD.md`
+- `/docs/PRD_Core.md`
 
 ---
 

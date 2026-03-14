@@ -9,11 +9,17 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.98.0",
+    "@tanstack/react-query": "^5.90.21",
     "next": "16.1.6",
     "react": "19.2.3",
-    "react-dom": "19.2.3"
+    "react-dom": "19.2.3",
+    "zustand": "^5.0.11",
+    "@restaurant-direct/ui": "workspace:*",
+    "lucide-react": "^0.300.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.58.2",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",

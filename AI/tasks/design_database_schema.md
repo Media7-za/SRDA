@@ -33,7 +33,7 @@ The database schema is the single source of truth for the platform's data. Corre
 
 - `/ai/context.md`
 - `/ai/agent_rules.md`
-- `/docs/PRD.md`
+- `/docs/PRD_Core.md`
 - `/ai/agents/architect_agent.md`
 - `/ai/tasks/01_finalize_database_schema.md` (reference existing work)
 

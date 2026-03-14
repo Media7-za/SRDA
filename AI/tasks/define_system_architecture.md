@@ -33,7 +33,7 @@ A stable, modular architecture ensures that as the platform grows (e.g., adding 
 
 - `/ai/context.md`
 - `/ai/agent_rules.md`
-- `/docs/PRD.md`
+- `/docs/PRD_Core.md`
 - `/ai/agents/architect_agent.md`
 - `/ai/architecture.md` (existing baseline)
 

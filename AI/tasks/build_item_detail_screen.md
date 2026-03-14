@@ -33,7 +33,7 @@ Customization (e.g., "Extra Spicy", "No Peanuts") is a huge driver of restaurant
 
 - `/ai/context.md`
 - `/ai/agents/frontend_agent.md`
-- `/docs/PRD.md`
+- `/docs/PRD_Core.md`
 
 ---
 

@@ -30,7 +30,7 @@ Before performing any task, you must read:
 /ai/context.md
 /ai/agent_rules.md
 /ai/agents/architect_agent.md
-/docs/PRD.md
+/docs/PRD_Core.md
 
 These documents define:
 

@@ -14,7 +14,7 @@ Before performing any task, you must read:
 
 /ai/context.md
 /ai/agent_rules.md
-/docs/PRD.md
+/docs/PRD_Core.md
 /docs/platform/design_tokens.md
 /docs/tenants/*/design_tokens.md
 /docs/component_architecture.md
