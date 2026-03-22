@@ -3,6 +3,8 @@
 
 **Source of Truth:** This document defines the exact architecture, system modules, service boundaries, operational rules, and data flows for the entire platform. **ALL AI agents must strictly adhere to these patterns.** Do not invent new architectural layers, break module ownership, or bypass defined boundaries without explicit updates to this file.
 
+For current physical table and column definitions, use `database/prisma/schema.prisma` and `database/prisma/migrations/*`. This document is authoritative for architecture, ownership rules, and state-machine vocabulary, not for every live column-level detail.
+
 ---
 
 ## 1. System Overview
@@ -102,28 +104,29 @@ The system is organized around specific business domains. **Strict Ownership Rul
 
 ### 3.1 Authentication & User Identity (Auth Module)
 - **Role:** Identity management and JWT issuance.
-- **Table Ownership:** `users`, `roles`, `sessions`.
+- **Table Ownership:** `users`, `addresses`.
 
 ### 3.2 Restaurant & Catalog (Menu Module)
 - **Role:** Managing restaurant profiles and available food items. Highly cached.
-- **Table Ownership:** `restaurants`, `menu_items`, `menu_categories`, `menu_modifiers`.
+- **Table Ownership:** `restaurants`, `menu_categories`, `menu_items`, `menu_modifier_groups`, `menu_modifier_options`.
 
 ### 3.3 Ordering Engine (Order Module)
 - **Role:** Handles the cart lifecycle, order validation, pricing calculation, and status tracking.
-- **Table Ownership:** `orders`, `order_items`, `order_item_options`, `carts`.
+- **Table Ownership:** `orders`, `order_items`, `order_item_options`, `order_status_history`.
 
 ### 3.4 Payments & Billing (Payment Module)
 - **Role:** Reconciling payment status with orders via external gateways (Stripe) and internal manual resolutions (Pay In-Store).
-- **Table Ownership:** `payments` (the canonical ledger), `payment_intents`.
+- **Table Ownership:** `payments` (the canonical ledger).
 - **Rule:** No raw credit card data is stored; only intent IDs and statuses. All money events (online or in-store) must be recorded in the `payments` table.
 - **Rule:** In-store payments require staff accountability via `collected_by_user_id` on the `payments` record.
 
 ### 3.5 Delivery & Fulfillment (Delivery Module)
 - **Role:** Assigning orders to drivers and tracking delivery states.
-- **Table Ownership:** `deliveries`, `drivers`, `driver_locations`.
+- **Table Ownership:** `deliveries`, `drivers`, `driver_locations`, `driver_devices`, `driver_earnings_config`.
 
 ### 3.6 Realtime & Notifications (Event Module)
 - **Role:** Handles WebSockets/SSE for live order tracking, and push notifications/emails.
+- **Table Ownership:** `board_events`.
 - **Rule:** Other modules throw internal events (e.g., `OrderConfirmedEvent`), which this module listens to and broadcasts out.
 
 ### 3.7 Canonical Enums & Vocabulary
@@ -155,10 +158,10 @@ Coupling rules to Order states:
 
 ### 3.10 Location Storage Strategy (Dual Model)
 To power real-time UI without infinitely scaling coordinates, location utilizes a dual model:
-1. **`drivers.current_location`**:
-   - Stores only the latest known location (`latitude`, `longitude`, `recorded_at`).
+1. **`drivers` latest-location fields**:
+   - Stores only the latest known location (`latitude`, `longitude`, `last_location_at`).
 2. **`driver_locations` (History)**:
-   - Append-only history with fields: `id`, `driver_id`, `delivery_id` (nullable), `latitude`, `longitude`, `recorded_at`.
+   - Append-only history with fields: `id`, `driver_id`, `delivery_id` (nullable), `latitude`, `longitude`, `timestamp`, `accuracy`.
    - Retention policy: Keep detailed points for **7–30 days**, aggregating or deleting older points via a scheduled cleanup job.
 
 ---
@@ -202,7 +205,7 @@ For online payments (Stripe), payment success must be verified strictly through 
 ### 4.7 Fulfillment & Payment Modes (MVP Locked Decisions)
 The platform supports two explicit order/payment branches:
 1. **Delivery + Online Payment:** Online checkout using Stripe.
-2. **Collection + Pay In-Store:** Bypasses Payment Intents. The customer pays cash or card at the pickup counter. 
+2. **Pickup + Pay In-Store:** Bypasses online payment intents. The customer pays cash or card at the pickup counter.
 
 *Delivery + Pay In-Store (Cash on Delivery) is explicitly unsupported in MVP.*
 
@@ -240,10 +243,10 @@ The general rule is that `payments` is the canonical ledger of money events, and
 - Verified payment success (via webhook) allows `order = confirmed`.
 - Payment failure cannot produce a confirmed order.
 
-**For Collection + Pay In-Store:**
+**For Pickup + Pay In-Store:**
 - Order can be created directly as `confirmed` or `pending` (depending on restaurant auto-accept config).
 - `payment_status` remains `unpaid` throughout preparation.
-- Staff collection of payment updates `payments` table (with `staff_id`), changes `orders.payment_status` to `paid`, and optionally transitions order state if completed.
+- Staff collection of payment updates `payments` table (with `collected_by_user_id`), changes `orders.payment_status` to `paid`, and optionally transitions order state if completed.
 
 **Drift Rule:**
 - The order status and payment status must never be allowed to drift apart. All manual adjustments must map directly to an entry in the `payments` table.

@@ -27,7 +27,9 @@ dependencies:
   # Maps & Location (PRD §7, §10)
   google_maps_flutter: ^2.5.0
   geolocator: ^10.1.0
-  background_locator_2: ^3.0.0
+  sqflite: ^2.3.0
+  path: ^1.8.3
+  permission_handler: ^11.0.0
   
   # External Navigation (PRD §7)
   url_launcher: ^6.2.0
@@ -40,6 +42,7 @@ dependencies:
   equatable: ^2.0.5
   json_annotation: ^4.8.1
   intl: ^0.18.1
+  connectivity_plus: ^5.0.2
 
 dev_dependencies:
   flutter_test:

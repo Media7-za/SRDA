@@ -1,0 +1,12 @@
+{
+    "importMap": "supabase/functions/import_map.json",
+    "compilerOptions": {
+        "allowJs": true,
+        "lib": [
+            "deno.window",
+            "deno.ns",
+            "dom"
+        ],
+        "strict": true
+    }
+}

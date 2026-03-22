@@ -7,31 +7,50 @@
 ## Core Files (Always Load — Every Task, No Exceptions)
 
 ```
-/ai/context.md
-/ai/architecture.md
-/ai/agent_rules.md
-/ai/implementation_decisions.md
-/ai/agents/database_agent.md
-/docs/PRD_Core.md
-/docs/domain_glossary.md
+/AI/context.md
+/AI/architecture.md
+/AI/agent_rules.md
+/AI/implementation_decisions.md
+/AI/agents/database_agent.md
+/Docs/PRD_Core.md
+/Docs/domain_glossary.md
 ```
 
-`PRD_Core.md` is the canonical operating model for the entire platform. It defines the schema, all enums, order lifecycle, payment rules, security rules, and cross-app invariants. Every agent on every surface loads it first.
+`PRD_Core.md` is the canonical source for product and domain intent across the platform. It defines intended entities, enums, lifecycle rules, payment rules, security rules, and cross-app invariants. Every agent on every surface loads it first.
 
-`domain_glossary.md` provides machine-readable canonical value arrays for every enum and a `RetiredValues` block. Agents use these blocks directly when generating enums, validation arrays, switch statements, or type definitions — never reconstruct values from memory.
+`domain_glossary.md` is a quick-reference helper for canonical values. Before generating implementation code, agents must verify any schema-facing enum or field value against `database/prisma/schema.prisma` and migration history when implementation drift is possible.
+
+---
+
+## Schema Authority
+
+Physical database schema is defined by:
+
+- `/database/prisma/schema.prisma`
+- `/database/prisma/migrations/`
+
+`PRD_Core.md` defines intended product/domain model.
+`AI/architecture.md` defines architecture boundaries, ownership rules, state-machine vocabulary, and system patterns.
+
+If there is a mismatch:
+
+- Prisma = implementation truth
+- PRD = intended behavior
+- Architecture = module boundaries, ownership rules, and canonical state-machine vocabulary
+- The gap must be explicitly resolved
 
 ---
 
 ## Working on the Customer App?
 
 ```
-/docs/PRD_Core.md          ← already loaded above
-/docs/PRD_Customer_App.md
-/docs/platform/design_tokens.md
-/docs/tenants/phuket_thai/design_tokens.md
-/docs/component_architecture.md
-/docs/ui_conformance_rules.md
-/docs/screens/customer_app.md
+/Docs/PRD_Core.md          ← already loaded above
+/Docs/PRD_Customer_App.md
+/Docs/platform/design_tokens.md
+/Docs/tenants/phuket_thai/design_tokens.md
+/Docs/component_architecture.md
+/Docs/ui_conformance_rules.md
+/Docs/screens/customer_app.md
 ```
 
 > Covers: menu browsing UX, cart behaviour, checkout flow, order tracking display, first-time onboarding, saved addresses, customer metrics.  
@@ -43,13 +62,13 @@
 ## Working on the Restaurant Dashboard?
 
 ```
-/docs/PRD_Core.md          ← already loaded above
-/docs/PRD_Dashboard.md
-/docs/platform/design_tokens.md
-/docs/tenants/phuket_thai/design_tokens.md
-/docs/component_architecture.md
-/docs/ui_conformance_rules.md
-/docs/screens/dashboard.md
+/Docs/PRD_Core.md          ← already loaded above
+/Docs/PRD_Dashboard.md
+/Docs/platform/design_tokens.md
+/Docs/tenants/phuket_thai/design_tokens.md
+/Docs/component_architecture.md
+/Docs/ui_conformance_rules.md
+/Docs/screens/dashboard.md
 ```
 
 > Covers: live order feed, swimlane layout, order + delivery state machines, driver assignment, concurrency protection, realtime architecture, cancellation policy.  
@@ -60,13 +79,13 @@
 ## Working on the Restaurant Owner Portal?
 
 ```
-/docs/PRD_Core.md          ← already loaded above
-/docs/PRD_Owner_Portal.md
-/docs/platform/design_tokens.md
-/docs/tenants/phuket_thai/design_tokens.md
-/docs/component_architecture.md
-/docs/ui_conformance_rules.md
-/docs/screens/owner_portal.md
+/Docs/PRD_Core.md          ← already loaded above
+/Docs/PRD_Owner_Portal.md
+/Docs/platform/design_tokens.md
+/Docs/tenants/phuket_thai/design_tokens.md
+/Docs/component_architecture.md
+/Docs/ui_conformance_rules.md
+/Docs/screens/owner_portal.md
 ```
 
 > Covers: restaurant settings, opening hours, menu management (categories, items, modifiers), staff accounts, driver management. Phase 2: promotions, loyalty, analytics.  
@@ -77,12 +96,12 @@
 ## Working on the Platform Super-Admin Panel?
 
 ```
-/docs/PRD_Core.md          ← already loaded above
-/docs/PRD_Platform_Admin.md
-/docs/platform/design_tokens.md
-/docs/component_architecture.md
-/docs/ui_conformance_rules.md
-/docs/screens/platform_admin.md
+/Docs/PRD_Core.md          ← already loaded above
+/Docs/PRD_Platform_Admin.md
+/Docs/platform/design_tokens.md
+/Docs/component_architecture.md
+/Docs/ui_conformance_rules.md
+/Docs/screens/platform_admin.md
 ```
 
 > Covers: restaurant onboarding, suspend/activate, feature flags, platform revenue overview, impersonation and audit sessions.  
@@ -93,13 +112,13 @@
 ## Working on the Driver App?
 
 ```
-/docs/PRD_Core.md          ← already loaded above
-/docs/PRD_Driver.md
-/docs/platform/design_tokens.md
-/docs/tenants/phuket_thai/design_tokens.md
-/docs/component_architecture.md
-/docs/ui_conformance_rules.md
-/docs/screens/driver_app.md
+/Docs/PRD_Core.md          ← already loaded above
+/Docs/PRD_Driver.md
+/Docs/platform/design_tokens.md
+/Docs/tenants/phuket_thai/design_tokens.md
+/Docs/component_architecture.md
+/Docs/ui_conformance_rules.md
+/Docs/screens/driver_app.md
 ```
 
 > Covers: Flutter driver app, delivery state transitions (driver-owned only), GPS location posting, FCM push notifications, offline handling, earnings (tenant-gated).  
@@ -110,38 +129,38 @@
 ## Working on the Database / Schema?
 
 ```
-/docs/PRD_Core.md          ← already loaded above
-/docs/audits/schema_drift_report.md
-/docs/audits/schema_migration_plan.md
-/docs/audits/schema_patch_1.md
+/Docs/PRD_Core.md          ← already loaded above
+/Docs/audits/schema_drift_report.md
+/Docs/audits/schema_migration_plan.md
+/Docs/audits/schema_patch_1.md
 ```
 
-> PRD_Core.md contains the canonical 15-table schema. Migration files contain the patch sequence and execution order.
+> See **Schema Authority** above. `PRD_Core.md` is the intended domain model; Prisma + migrations are implementation truth. Audit docs (e.g. drift reports) describe gaps to reconcile — they are not a second schema source.
 
 ---
 
 ## Need a Quick Enum or Status Lookup?
 
 ```
-/docs/domain_glossary.md
+/Docs/domain_glossary.md
 ```
 
-> Canonical values for all enums, statuses, feature flag keys, and key terms. Quick reference — `PRD_Core.md` is authoritative if any conflict exists.
+> Canonical values for enums, statuses, feature flag keys, and key terms. Quick reference only — use `database/prisma/schema.prisma` for implemented schema values, `PRD_Core.md` for intended domain meaning, and `AI/architecture.md` for architectural vocabulary/state-machine rules.
 
 ---
 
 ## Working on UI, styling, Tailwind theme, components, or frontend UX?
 
 ```
-/docs/platform/design_tokens.md
-/docs/tenants/phuket_thai/design_tokens.md
-/docs/component_architecture.md
-/docs/ui_conformance_rules.md
-/docs/screens/customer_app.md
-/docs/screens/dashboard.md
-/docs/screens/owner_portal.md
-/docs/screens/platform_admin.md
-/docs/screens/driver_app.md
+/Docs/platform/design_tokens.md
+/Docs/tenants/phuket_thai/design_tokens.md
+/Docs/component_architecture.md
+/Docs/ui_conformance_rules.md
+/Docs/screens/customer_app.md
+/Docs/screens/dashboard.md
+/Docs/screens/owner_portal.md
+/Docs/screens/platform_admin.md
+/Docs/screens/driver_app.md
 ```
 
 > Ensures all agents use canonical spacing, typography, colors, and motion exactly as defined in the design token mapping, completely bounding their work in the UI Conformance constraints so they pass AI QA.
@@ -152,10 +171,10 @@
 
 1. `PRD_Core.md` is loaded by every agent. No exceptions.
 2. Surface PRDs reference Core rules — they do not redefine them. If a surface PRD appears to contradict `PRD_Core.md`, `PRD_Core.md` wins. Flag the conflict rather than silently picking one.
-3. `PRD.md` and `Restaurant_Direct_PRD.md` are superseded and retired. Do not load them.
-4. All file paths are case-sensitive. Use lowercase for all paths under `/ai/` and `/docs/`.
+3. `Docs/legacy/Restaurant_Direct_PRD_LEGACY.md` and any older consolidated PRD drafts are superseded and retired. Do not load them.
+4. All file paths are case-sensitive. Use the exact on-disk paths in this repository (for example `/AI/...` and `/Docs/...`).
 5. If a required PRD file does not exist, stop and report the missing file. Do not infer requirements.
-6. The `UserRole` enum in `/packages/types/src/roles.ts` is the canonical source of truth for all role values. Never use `admin`, `staff`, or any unlisted value.
-7. `domain_glossary.md` is a convenience reference only — always verify against `PRD_Core.md` for authoritative definitions.
-8. `architecture.md` is the source of truth for canonical enums, state machines, and module boundaries. If a PRD conflicts with `architecture.md`, flag the conflict — do not silently pick one.
-9. `PRD_Admin.md` is superseded by `PRD_Owner_Portal.md` and `PRD_Platform_Admin.md`. Do not load `PRD_Admin.md`.
+6. For `UserRole` and other schema-facing enums, use `database/prisma/schema.prisma` as implementation truth. `Docs/PRD_Core.md` defines intended values; if they diverge, flag the gap instead of inventing a third source.
+7. `Docs/domain_glossary.md` is a convenience reference only. Verify schema-facing values against Prisma and intended meanings against `Docs/PRD_Core.md`.
+8. `AI/architecture.md` is authoritative for module boundaries, ownership rules, and state-machine vocabulary. It is not a substitute for current physical table/column definitions in Prisma.
+9. Owner/admin requirements live in `Docs/PRD_Owner_Portal.md` and `Docs/PRD_Platform_Admin.md`. Do not use older combined admin drafts if they appear elsewhere.

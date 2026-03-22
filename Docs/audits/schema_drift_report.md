@@ -1,5 +1,25 @@
 # Schema Drift Report
 
+> **Status:** Point-in-time audit. This file compares PRD intent to an earlier Prisma state and is not canonical schema truth.
+>
+> Some findings below have already been addressed by later migrations, especially `database/prisma/migrations/20260308162610_patch1_mvp_schema_alignment/migration.sql`.
+>
+> For current implementation truth, check:
+>
+> - `database/prisma/schema.prisma`
+> - `database/prisma/migrations/*`
+> - `Docs/audits/schema_migration_plan.md`
+> - `Docs/audits/schema_patch_1.md`
+
+## Status After Patch 1
+
+Based on checked-in Prisma schema and migration history:
+
+- **Resolved by patch1:** `driver_devices`, `driver_earnings_config`, `menu_modifier_groups`, `menu_modifier_options`, `orders.fulfillment_type`, `orders.special_instructions`, `orders.version`, cancellation fields on `orders`, restaurant operational/profile fields, `users.is_active`, `users.must_reset_password`, `users.manager_pin`, `deliveries.failure_reason`, driver latest-location naming alignment, and the listed supporting indexes.
+- **Still open from repo evidence:** `audit_sessions`, `promotions`, `order_promotions`, `loyalty_accounts`, `loyalty_transactions`, and `loyalty_config` are still absent from `database/prisma/schema.prisma`.
+
+---
+
 ## 1. Tables Missing From Schema
 The following tables are mandated by the PRDs but are completely missing from the existing Prisma schema:
 

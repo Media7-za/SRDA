@@ -1,26 +1,19 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../config/app_config.dart';
-import '../auth/auth_repository.dart';
+import '../auth/token_service.dart';
 import 'api_response.dart';
+import 'endpoints.dart';
 
 /// Centralized HTTP client with JWT injection, 401 refresh, and 409 conflict handling.
-///
-/// All API calls in the app funnel through this client.
-/// Repositories use [get], [post], [patch] — never raw Dio.
-///
-/// Reference: PRD_Driver.md §3, §13
 class ApiClient {
   final Dio _dio;
-  final AuthRepository _authRepository;
-  final Ref _ref;
+  final TokenService _tokenService;
   bool _isRefreshing = false;
 
   ApiClient({
-    required Ref ref,
-    required AuthRepository authRepository,
-  })  : _authRepository = authRepository,
-        _ref = ref,
+    required TokenService tokenService,
+  })  : _tokenService = tokenService,
         _dio = Dio(BaseOptions(
           baseUrl: AppConfig.baseUrl,
           connectTimeout: AppConfig.connectTimeout,
@@ -29,8 +22,7 @@ class ApiClient {
         )) {
     _dio.interceptors.add(InterceptorsWrapper(
       onRequest: (options, handler) async {
-        // Inject JWT into every request
-        final token = await _authRepository.getToken();
+        final token = await _tokenService.getToken();
         if (token != null) {
           options.headers['Authorization'] = 'Bearer $token';
         }
@@ -39,32 +31,24 @@ class ApiClient {
       onError: (error, handler) async {
         final statusCode = error.response?.statusCode;
 
-        // --- 401 Unauthorized: Attempt silent token refresh ---
         if (statusCode == 401 && !_isRefreshing) {
           _isRefreshing = true;
           try {
-            await _authRepository.refreshToken();
-            // Retry original request with new token
-            final token = await _authRepository.getToken();
+            await _performRefresh();
+            final token = await _tokenService.getToken();
             error.requestOptions.headers['Authorization'] = 'Bearer $token';
             final response = await _dio.fetch(error.requestOptions);
             _isRefreshing = false;
             return handler.resolve(response);
           } catch (e) {
-            // Refresh failed — force re-login (PRD §2: "show a re-login screen")
-            await _authRepository.logout();
+            await _tokenService.clearToken();
             _isRefreshing = false;
           }
         }
 
-        // --- 409 Conflict: State machine violation ---
-        // Don't swallow — let it propagate as a DioException with the
-        // parsed error envelope so notifiers can handle it specifically.
         if (statusCode == 409) {
-          // Parse the error envelope from the 409 response body
           final responseData = error.response?.data;
           if (responseData is Map<String, dynamic>) {
-            // Wrap in a response so callers can inspect the envelope
             return handler.resolve(Response(
               data: responseData,
               statusCode: 409,
@@ -78,32 +62,49 @@ class ApiClient {
     ));
   }
 
-  /// GET request — returns parsed envelope.
+  /// Perform token refresh using a clean Dio instance to avoid interceptor recursion.
+  Future<void> _performRefresh() async {
+    final token = await _tokenService.getToken();
+    final response = await Dio().post(
+      '${AppConfig.baseUrl}${Endpoints.refresh}',
+      options: Options(headers: {'Authorization': 'Bearer $token'}),
+    );
+    
+    if (response.statusCode == 200) {
+      final envelope = ApiEnvelope.fromJson(response.data);
+      if (envelope.success && envelope.data != null) {
+        final newToken = (envelope.data as Map<String, dynamic>)['token'] as String;
+        await _tokenService.saveToken(newToken);
+        return;
+      }
+    }
+    throw Exception('Refresh failed');
+  }
+
   Future<ApiEnvelope> get(String path, {Map<String, dynamic>? queryParams}) async {
     final response = await _dio.get(path, queryParameters: queryParams);
     return _parseEnvelope(response);
   }
 
-  /// POST request — returns parsed envelope.
   Future<ApiEnvelope> post(String path, dynamic data) async {
     final response = await _dio.post(path, data: data);
     return _parseEnvelope(response);
   }
 
-  /// PATCH request — returns parsed envelope.
   Future<ApiEnvelope> patch(String path, dynamic data) async {
     final response = await _dio.patch(path, data: data);
     return _parseEnvelope(response);
   }
 
-  /// Parse raw Dio response into ApiEnvelope.
   ApiEnvelope _parseEnvelope(Response response) {
-    final data = response.data as Map<String, dynamic>;
-    return ApiEnvelope.fromJson(data);
+    if (response.data is Map<String, dynamic>) {
+      return ApiEnvelope.fromJson(response.data as Map<String, dynamic>);
+    }
+    throw Exception('Invalid API response format');
   }
 }
 
 final apiClientProvider = Provider<ApiClient>((ref) {
-  final authRepo = ref.read(authRepositoryProvider);
-  return ApiClient(ref: ref, authRepository: authRepo);
+  final tokenService = ref.read(tokenServiceProvider);
+  return ApiClient(tokenService: tokenService);
 });

@@ -3,7 +3,6 @@ import '../../core/api/api_client.dart';
 import '../../core/api/api_response.dart';
 import '../../core/api/endpoints.dart';
 import '../../shared/models/delivery.dart';
-import '../../shared/models/delivery_status.dart';
 
 /// Filter options for delivery history.
 enum DeliveryHistoryFilter {

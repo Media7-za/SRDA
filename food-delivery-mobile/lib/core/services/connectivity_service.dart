@@ -1,46 +1,48 @@
 import 'dart:async';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-// TODO: Add connectivity_plus to pubspec.yaml and uncomment
-// import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter/foundation.dart';
 
-/// Connectivity monitoring service.
+/// Monitors network connectivity and exposes connection state.
 ///
-/// Provides reactive online/offline detection for:
-/// - Showing offline banner (PRD §12)
-/// - Triggering GPS queue flush on reconnect
-/// - Disabling status buttons with retry message
-///
-/// Reference: PRD_Driver.md §12 Offline Handling
-abstract class ConnectivityService {
-  /// Stream of connectivity state changes.
-  Stream<bool> get onConnectivityChanged;
+/// Used by LocationService to determine when to flush offline location queue.
+class ConnectivityService {
+  final Connectivity _connectivity = Connectivity();
+  StreamSubscription<ConnectivityResult>? _subscription;
+  final _controller = StreamController<ConnectivityResult>.broadcast();
 
-  /// Current connectivity status.
-  bool get isOnline;
+  /// Stream of connectivity changes for other services to watch.
+  /// Emits single ConnectivityResult values (not lists) per connectivity_plus ^5.0.2
+  Stream<ConnectivityResult> get onConnectivityChanged => _controller.stream;
+
+  /// Initialize the service and start listening for changes.
+  void initialize() {
+    // onConnectivityChanged emits ConnectivityResult (single), NOT List<ConnectivityResult>
+    _subscription = _connectivity.onConnectivityChanged.listen((result) {
+      if (kDebugMode) {
+        print('[ConnectivityService] Changed to: $result');
+      }
+      _controller.add(result); // Emit the single result directly
+    });
+  }
+
+  /// Check if device currently has any network connection.
+  /// Note: checkConnectivity() returns Future<List<ConnectivityResult>>, so .any() IS valid here.
+  Future<bool> isConnected() async {
+    try {
+      final result = await _connectivity.checkConnectivity();
+      // In version 5.0.2, checkConnectivity returns a single ConnectivityResult
+      return result != ConnectivityResult.none;
+    } catch (e) {
+      if (kDebugMode) {
+        print('[ConnectivityService] Connection check failed: $e');
+      }
+      return false;
+    }
+  }
+
+  /// Dispose resources.
+  void dispose() {
+    _subscription?.cancel();
+    _controller.close();
+  }
 }
-
-/// Stub implementation — replace with connectivity_plus when added.
-class StubConnectivityService implements ConnectivityService {
-  // TODO: Replace with real implementation
-  //
-  // late final StreamSubscription _subscription;
-  // bool _isOnline = true;
-  // final _controller = StreamController<bool>.broadcast();
-  //
-  // StubConnectivityService() {
-  //   _subscription = Connectivity().onConnectivityChanged.listen((result) {
-  //     _isOnline = result != ConnectivityResult.none;
-  //     _controller.add(_isOnline);
-  //   });
-  // }
-
-  @override
-  Stream<bool> get onConnectivityChanged => Stream.value(true);
-
-  @override
-  bool get isOnline => true;
-}
-
-final connectivityServiceProvider = Provider<ConnectivityService>((ref) {
-  return StubConnectivityService();
-});

@@ -1,7 +1,7 @@
 # Domain Glossary
 **Platform:** Restaurant Direct  
 **Purpose:** Quick-reference canonical values for all enums, statuses, and key terms.  
-**Authority:** `PRD_Core.md` is the authoritative source. This glossary is a convenience reference — if any value here conflicts with `PRD_Core.md`, `PRD_Core.md` wins.  
+**Authority:** `PRD_Core.md` is the authoritative source for intended domain meaning. `database/prisma/schema.prisma` and `database/prisma/migrations/*` define current implementation truth. This glossary is a convenience reference only.  
 **Audience:** AI agents and developers needing fast lookup of canonical string values.
 
 ---
@@ -58,10 +58,11 @@ Values permitted in `payments.status`.
 
 | Value | Description |
 |---|---|
-| `intent_created` | Stripe Payment Intent created, payment not yet attempted |
+| `pending` | Payment record exists, but payment is not yet completed |
 | `processing` | Payment in progress |
 | `succeeded` | Payment confirmed via Stripe webhook |
 | `failed` | Payment failed |
+| `refunded` | Payment was refunded |
 
 ---
 
@@ -71,9 +72,8 @@ Values permitted in `orders.payment_status`.
 
 | Value | Description |
 |---|---|
-| `unpaid` | Payment not yet collected (pay in-store orders) |
+| `unpaid` | Payment not yet collected or confirmed |
 | `paid` | Payment confirmed |
-| `refunded` | Payment refunded |
 
 ---
 
@@ -146,13 +146,13 @@ Keys permitted in `restaurants.features` JSONB. No other keys are valid.
 | **Audit token** | Short-lived read-only token allowing Platform Admin to view Owner Portal. Never grants write access or payment endpoint access. |
 | **Canonical status** | The exact string value stored in the database and used in API payloads — not the UI display label. |
 | **Display label** | The human-readable string shown in the UI. Mapped from canonical status at the presentation layer. |
-| **Phase 2** | Features deferred from MVP. Schema tables exist; application logic is not wired. |
+| **Phase 2** | Features deferred from MVP. Schema tables may exist or may still be pending; verify in Prisma before assuming implementation. |
 
 ---
 
 ## Machine Canonical Values
 
-Agents may copy these directly when generating enums, validation arrays, switch statements, or type definitions. Do not reconstruct from the tables above — use these blocks as the source.
+Agents may copy these directly when generating enums, validation arrays, switch statements, or type definitions, but must verify schema-facing values against `database/prisma/schema.prisma` if any implementation drift is suspected.
 
 ```
 OrderStatus = [
@@ -181,15 +181,15 @@ FulfillmentType = [
 
 OrderPaymentStatus = [
   "unpaid",
-  "paid",
-  "refunded"
+  "paid"
 ]
 
 PaymentStatus = [
-  "intent_created",
+  "pending",
   "processing",
   "succeeded",
-  "failed"
+  "failed",
+  "refunded"
 ]
 
 UserRole = [
@@ -244,6 +244,7 @@ RetiredValues = [
   "collection",      // use "pickup"
   "admin",           // use "restaurant_owner"
   "staff",           // use "restaurant_staff"
+  "intent_created",  // use "pending"
   "completed",       // use "delivered"
   "READY",           // use "ready_for_pickup"
   "out-for-delivery" // use "out_for_delivery"

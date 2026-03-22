@@ -1,6 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../api/api_client.dart';
-import '../api/endpoints.dart';
 
 /// FCM notification service stub.
 ///
@@ -29,9 +28,7 @@ abstract class NotificationService {
 
 /// Stub implementation — replace with FirebaseMessaging when configured.
 class StubNotificationService implements NotificationService {
-  final ApiClient _apiClient;
-
-  StubNotificationService(this._apiClient);
+  StubNotificationService(ApiClient apiClient);
 
   @override
   Future<void> registerToken(String driverId) async {

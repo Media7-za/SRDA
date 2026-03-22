@@ -12,7 +12,7 @@ void main() async {
 
   runApp(
     // Riverpod scope must wrap the entire app
-    ProviderScope(
+    const ProviderScope(
       child: RestaurantDirectDriverApp(),
     ),
   );

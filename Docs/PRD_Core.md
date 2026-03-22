@@ -7,17 +7,19 @@ PRD_Core.md is the canonical source of truth for:
 • order lifecycle
 • payment lifecycle
 • domain invariants
-• platform architecture
+• cross-surface product rules
 
 Surface PRDs (Customer, Dashboard, Driver, Owner Portal, Platform Admin)
 may reference but must not redefine these rules.
+
+This document is canonical for product/domain intent. It is not guaranteed to be an exact snapshot of the current Prisma implementation; check `database/prisma/schema.prisma` and `database/prisma/migrations/` for implementation truth.
 
 ---
 
 # PRD — Core Product & Domain Logic
 **Platform:** Restaurant Direct
 **Stage:** MVP
-**Audience:** All AI Coding Agents — this is the root documentation for system truth.
+**Audience:** All AI Coding Agents — this is the root documentation for product and domain intent.
 
 ## 1. Product Overview
 
@@ -76,9 +78,9 @@ export enum UserRole {
 
 ---
 
-## 4. Core Database Schema (12-Table)
+## 4. Core Database Schema (Intent Model)
 
-This schema supports: single restaurant, multi restaurant, delivery, pickup, promotions, and loyalty without needing redesign later.
+This section describes the intended domain model. It supports: single restaurant, multi restaurant, delivery, pickup, promotions, and loyalty without needing redesign later.
 
 ### 1. Users (`users`)
 All customers.

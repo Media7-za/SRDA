@@ -1,0 +1,59 @@
+# Walkthrough: Order Details Screen (v2.2)
+
+This document provides a technical and functional overview of the Order Details interface within the LPG Delivery Management System.
+
+## 1. Order Identification & Header
+Each order selection triggers a contextual **Detail Panel** on the right side of the workspace.
+
+*   **Order Number**: Displayed prominently in the top-left of the panel (e.g., `02/03-006`).
+*   **Status Chip**: Indicates the current lifecycle state (Unassigned, Assigned, Dispatched, etc.).
+*   **Customer Required By**: Shows the deadline requested by the customer, formatted for quick reading.
+
+![Order Details Header and Panel Layout](file:///Users/admin/.gemini/antigravity/brain/9cc2c976-1e1b-4644-a44b-f9a3ea44d3f3/order_details_assigned_1773686790476.png)
+
+---
+
+## 2. Items Ordered (PRODUCTS)
+The **PRODUCTS** section provides a line-item breakdown of the order.
+
+*   **Attributes**: Displays product name (shortened format), category, quantity, and individual subtotal.
+*   **Scroll Logic**: The detail pane is independently scrollable to accommodate large bulk orders.
+*   **Financials**: A summary subtotal is calculated at the bottom of the section.
+
+![Items Ordered List](file:///Users/admin/.gemini/antigravity/brain/9cc2c976-1e1b-4644-a44b-f9a3ea44d3f3/items_ordered_section_1773687200939.png)
+
+---
+
+## 3. Tracking & Driver App Integration
+The **TRACKING** section utilizes a vertical timeline to show progression.
+
+*   **Current State**: Indicated by a high-contrast dot (e.g., Green for Unassigned/Pending).
+*   **Driver App Placeholders**: 
+    *   **Dispatched**: Placeholder for when the driver starts the trip.
+    *   **Delivered**: Placeholder for proof of delivery (POD) capture.
+*   **Future Development**: Real-time GPS tracking details will be injected into this timeline once the Driver App is active.
+
+![Tracking Timeline Placeholders](file:///Users/admin/.gemini/antigravity/brain/9cc2c976-1e1b-4644-a44b-f9a3ea44d3f3/order_details_unassigned_1773687035139.png)
+
+---
+
+## 4. Operational Workflow: Assigning Orders
+The interface adapts its action buttons based on the order's status.
+
+### A. Unassigned State
+*   **Function**: "Assign Route" button.
+*   **Intended Action**: Redirect the user to correctly sequence the order in the trip planner.
+*   **Target URL**: `http://localhost:3000/trips/new`
+
+> [!NOTE]
+> **Development Requirement:** The "Assign Route" button in the current UI is a visual placeholder. Implementation is required to link this button to the `/trips/new` route with the current order ID pre-selected.
+
+### B. "Plan Trip" Destination
+When the assignment flow is triggered, the user is moved to the **Plan Trip** workspace to select a Driver, Vehicle, and Route.
+
+![Plan Trip Destination Workspace](file:///Users/admin/.gemini/antigravity/brain/9cc2c976-1e1b-4644-a44b-f9a3ea44d3f3/plan_trip_view_1773689413889.png)
+
+### C. Assigned State
+Once an order is linked to a trip (e.g., `order=29`), the "Assign Route" button is replaced with management actions:
+*   **Reschedule**: Moves the order back to confirm state or changes dates.
+*   **Cancel Order**: Terminates the order lifecycle.

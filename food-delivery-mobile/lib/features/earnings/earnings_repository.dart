@@ -2,7 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/api/api_client.dart';
 import '../../core/api/api_response.dart';
 import '../../core/api/endpoints.dart';
-import 'earnings_notifier.dart';
+import '../../shared/models/earnings.dart';
 
 /// Repository for earnings-related API calls.
 ///

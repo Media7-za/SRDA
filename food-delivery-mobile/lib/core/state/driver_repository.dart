@@ -1,99 +1,83 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../core/api/api_client.dart';
-import '../../core/api/api_response.dart';
-import '../../core/api/endpoints.dart';
+import '../api/api_client.dart';
+import '../api/endpoints.dart';
 
-/// Repository for driver profile and status management.
+class DriverStatusResult {
+  final bool isSuccess;
+  final bool? isOnline;
+  final String? errorMessage;
+  final String? errorCode;
+  final bool isConflict;
+
+  DriverStatusResult({
+    required this.isSuccess,
+    this.isOnline,
+    this.errorMessage,
+    this.errorCode,
+    this.isConflict = false,
+  });
+}
+
 class DriverRepository {
   final ApiClient _apiClient;
 
   DriverRepository(this._apiClient);
 
-  /// Helper for safe extraction.
-  T? _extractData<T>(ApiEnvelope envelope) {
-    if (!envelope.success || envelope.data == null) return null;
-    if (envelope.data is! T) {
-      // ignore: avoid_print
-      print('[DriverRepo] Type mismatch: expected $T, got ${envelope.data.runtimeType}');
-      return null;
-    }
-    return envelope.data as T;
-  }
-
-  /// Fetch driver profile (including status).
+  /// GET /api/drivers/:id
   Future<DriverStatusResult> getStatus(String driverId) async {
     try {
       final envelope = await _apiClient.get(Endpoints.driverProfile(driverId));
-      final data = _extractData<Map<String, dynamic>>(envelope);
-      
-      if (envelope.success && data != null) {
-        return DriverStatusResult.success(data['status'] == 'online');
+      if (envelope.success && envelope.data != null) {
+        final data = envelope.data as Map<String, dynamic>;
+        return DriverStatusResult(
+          isSuccess: true,
+          isOnline: data['status'] == 'online',
+        );
       }
-      
-      return DriverStatusResult.failure(
-        envelope.error?.message ?? 'Failed to load status',
+      return DriverStatusResult(
+        isSuccess: false,
+        errorMessage: envelope.error?.message ?? 'Failed to load status',
         errorCode: envelope.error?.code,
       );
     } catch (e) {
-      // ignore: avoid_print
-      print('[DriverRepo] getStatus error: $e');
-      return DriverStatusResult.failure('Network error');
+      return DriverStatusResult(
+        isSuccess: false,
+        errorMessage: 'Network error',
+      );
     }
   }
 
-  /// Update driver status.
+  /// PATCH /api/drivers/:id/status
   Future<DriverStatusResult> updateStatus(String driverId, bool isOnline) async {
     try {
       final envelope = await _apiClient.patch(
         Endpoints.driverStatus(driverId),
         {'status': isOnline ? 'online' : 'offline'},
       );
-      
-      if (envelope.success) {
-        return DriverStatusResult.success(isOnline);
+
+      if (envelope.success && envelope.data != null) {
+        final data = envelope.data as Map<String, dynamic>;
+        return DriverStatusResult(
+          isSuccess: true,
+          isOnline: data['status'] == 'online',
+        );
       }
-      
-      return DriverStatusResult.failure(
-        envelope.error?.message ?? 'Failed to update status',
-        isConflict: envelope.isConflict,
+
+      final isConflict = envelope.error?.code == 'STATE_CONFLICT' || envelope.error?.code == 'CANNOT_GO_OFFLINE';
+
+      return DriverStatusResult(
+        isSuccess: false,
+        errorMessage: envelope.error?.message ?? 'Failed to update status',
         errorCode: envelope.error?.code,
+        isConflict: isConflict,
       );
     } catch (e) {
-      // ignore: avoid_print
-      print('[DriverRepo] updateStatus error: $e');
-      return DriverStatusResult.failure('Network error');
+      return DriverStatusResult(
+        isSuccess: false,
+        errorMessage: 'Network error',
+      );
     }
   }
-}
-
-class DriverStatusResult {
-  final bool? isOnline;
-  final String? errorMessage;
-  final bool isConflict;
-  final String? errorCode;
-
-  DriverStatusResult._({
-    this.isOnline,
-    this.errorMessage,
-    this.isConflict = false,
-    this.errorCode,
-  });
-
-  factory DriverStatusResult.success(bool isOnline) =>
-      DriverStatusResult._(isOnline: isOnline);
-
-  factory DriverStatusResult.failure(
-    String message, {
-    bool isConflict = false,
-    String? errorCode,
-  }) =>
-      DriverStatusResult._(
-        errorMessage: message,
-        isConflict: isConflict,
-        errorCode: errorCode,
-      );
-
-  bool get isSuccess => isOnline != null;
 }
 
 final driverRepositoryProvider = Provider<DriverRepository>((ref) {

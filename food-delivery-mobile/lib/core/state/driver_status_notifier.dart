@@ -19,6 +19,7 @@ class DriverStatusState {
   final bool isLoading;
   final bool hasActiveDelivery;
   final String? error;
+  final String? errorCode;
   final bool isInitialized;
 
   const DriverStatusState({
@@ -28,6 +29,7 @@ class DriverStatusState {
     this.isLoading = false,
     this.hasActiveDelivery = false,
     this.error,
+    this.errorCode,
     this.isInitialized = false,
   });
 
@@ -38,6 +40,7 @@ class DriverStatusState {
     bool? isLoading,
     bool? hasActiveDelivery,
     String? error,
+    String? errorCode,
     bool? isInitialized,
   }) {
     return DriverStatusState(
@@ -47,6 +50,7 @@ class DriverStatusState {
       isLoading: isLoading ?? this.isLoading,
       hasActiveDelivery: hasActiveDelivery ?? this.hasActiveDelivery,
       error: error,
+      errorCode: errorCode,
       isInitialized: isInitialized ?? this.isInitialized,
     );
   }
@@ -55,9 +59,9 @@ class DriverStatusState {
 class DriverStatusNotifier extends StateNotifier<DriverStatusState> {
   final DriverRepository _repository;
   // TODO: Use for FCM re-auth flow (PRD §11) — keep injection point for future phase
-  final AuthRepository _authRepository;
+  // final AuthRepository _authRepository;
 
-  DriverStatusNotifier(this._repository, this._authRepository)
+  DriverStatusNotifier(this._repository, AuthRepository authRepository)
       : super(const DriverStatusState());
 
   /// Initialize from authenticated session — call after login/token restore.
@@ -81,7 +85,7 @@ class DriverStatusNotifier extends StateNotifier<DriverStatusState> {
     final driverId = state.driverId;
     if (driverId == null) return;
 
-    state = state.copyWith(isLoading: true, error: null);
+    state = state.copyWith(isLoading: true, error: null, errorCode: null);
     try {
       final result = await _repository.getStatus(driverId);
       if (result.isSuccess && result.isOnline != null) {
@@ -96,18 +100,20 @@ class DriverStatusNotifier extends StateNotifier<DriverStatusState> {
         state = state.copyWith(
           isLoading: false,
           error: 'Invalid status response from server',
+          errorCode: 'INVALID_RESPONSE',
         );
       } else {
         state = state.copyWith(
           isLoading: false,
           error: result.errorMessage,
+          errorCode: result.errorCode,
         );
       }
     } on DioException catch (e) {
       if (e.response?.statusCode == 401) {
-        state = state.copyWith(isLoading: false, error: 'Session expired');
+        state = state.copyWith(isLoading: false, error: 'Session expired', errorCode: 'UNAUTHORIZED');
       } else {
-        state = state.copyWith(isLoading: false, error: 'Unable to load status');
+        state = state.copyWith(isLoading: false, error: 'Unable to load status', errorCode: 'NETWORK_ERROR');
       }
     } catch (e, stack) {
       if (kDebugMode) {
@@ -115,7 +121,8 @@ class DriverStatusNotifier extends StateNotifier<DriverStatusState> {
       }
       state = state.copyWith(
         isLoading: false, 
-        error: 'Unable to load status'
+        error: 'Unable to load status',
+        errorCode: 'UNKNOWN_ERROR',
       );
     }
   }
@@ -126,14 +133,12 @@ class DriverStatusNotifier extends StateNotifier<DriverStatusState> {
   /// Backend returns 409 if this rule is violated — we surface the message.
   ///
   /// Returns `true` if toggle succeeded, `false` otherwise.
-  /// If this returns `false` with a network-related error, the UI should keep
-  /// the toggle enabled and allow the user to retry by calling this method again.
   Future<bool> toggleStatus() async {
     final driverId = state.driverId;
     if (driverId == null) return false;
 
     final newOnlineState = !state.isOnline;
-    state = state.copyWith(isLoading: true, error: null);
+    state = state.copyWith(isLoading: true, error: null, errorCode: null);
 
     try {
       final result = await _repository.updateStatus(driverId, newOnlineState);
@@ -151,6 +156,7 @@ class DriverStatusNotifier extends StateNotifier<DriverStatusState> {
         state = state.copyWith(
           isLoading: false,
           error: 'Invalid status response from server',
+          errorCode: 'INVALID_RESPONSE',
         );
         return false;
       } else {
@@ -159,6 +165,7 @@ class DriverStatusNotifier extends StateNotifier<DriverStatusState> {
           state = state.copyWith(
             isLoading: false,
             error: 'Cannot go offline while a delivery is in progress',
+            errorCode: 'CANNOT_GO_OFFLINE',
           );
           return false;
         }
@@ -166,14 +173,15 @@ class DriverStatusNotifier extends StateNotifier<DriverStatusState> {
         state = state.copyWith(
           isLoading: false,
           error: result.errorMessage ?? 'Failed to update status',
+          errorCode: result.errorCode ?? 'UPDATE_FAILED',
         );
         return false;
       }
     } on DioException catch (e) {
       if (e.response?.statusCode == 401) {
-        state = state.copyWith(isLoading: false, error: 'Session expired');
+        state = state.copyWith(isLoading: false, error: 'Session expired', errorCode: 'UNAUTHORIZED');
       } else {
-        state = state.copyWith(isLoading: false, error: 'Connection error');
+        state = state.copyWith(isLoading: false, error: 'Connection error', errorCode: 'NETWORK_ERROR');
       }
       return false;
     } catch (e, stack) {
@@ -182,7 +190,8 @@ class DriverStatusNotifier extends StateNotifier<DriverStatusState> {
       }
       state = state.copyWith(
         isLoading: false, 
-        error: 'Connection error'
+        error: 'Connection error',
+        errorCode: 'UNKNOWN_ERROR',
       );
       return false;
     }

@@ -99,7 +99,7 @@ final routerProvider = Provider<GoRouter>((ref) {
 ///
 /// PRD_Driver.md §3, §5 (first screen after login)
 class RestaurantDirectDriverApp extends ConsumerWidget {
-  RestaurantDirectDriverApp({super.key});
+  const RestaurantDirectDriverApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

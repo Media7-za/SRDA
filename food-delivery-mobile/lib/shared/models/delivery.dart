@@ -1,96 +1,97 @@
 import 'delivery_status.dart';
+export 'delivery_status.dart';
+import 'order_summary.dart';
 
-/// Delivery model matching the `Delivery` schema in `driver-api.yaml`.
-///
-/// Pure data class — no business logic.
-/// Uses [DeliveryStatus] enum for type-safe status handling.
-///
-/// Reference: PRD_Driver.md §4, §7; driver-api.yaml Delivery schema
 class Delivery {
   final String id;
-  final String orderShortId;
+  final String orderId;
+  final String restaurantId;
+  final String driverId;
   final DeliveryStatus status;
-  final String pickupAddress;
-  final String dropoffAddress;
+  final String? pickupAddress;
+  final String? dropoffAddress;
+  
+  // Coordinates for map display (PRD §7)
   final double? pickupLatitude;
   final double? pickupLongitude;
   final double? dropoffLatitude;
   final double? dropoffLongitude;
-  final String customerName;
-  final String? customerContactPhone; // Masked or proxied per tenant config
-  final String? specialInstructions;
-  final List<DeliveryItem> items;
-  final DateTime? createdAt;
+  
+  // Current driver location (as reported by backend)
+  final double? currentLatitude;
+  final double? currentLongitude;
+
+  final DateTime? pickedUpAt;
+  final DateTime? deliveredAt;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final OrderSummary? order;
 
   Delivery({
     required this.id,
-    required this.orderShortId,
+    required this.orderId,
+    required this.restaurantId,
+    required this.driverId,
     required this.status,
-    required this.pickupAddress,
-    required this.dropoffAddress,
+    this.pickupAddress,
+    this.dropoffAddress,
     this.pickupLatitude,
     this.pickupLongitude,
     this.dropoffLatitude,
     this.dropoffLongitude,
-    required this.customerName,
-    this.customerContactPhone,
-    this.specialInstructions,
-    required this.items,
-    this.createdAt,
+    this.currentLatitude,
+    this.currentLongitude,
+    this.pickedUpAt,
+    this.deliveredAt,
+    required this.createdAt,
+    required this.updatedAt,
+    this.order,
   });
+
+  /// Helper to get the next destination coordinate based on status.
+  double? get destinationLatitude => status == DeliveryStatus.assigned ? pickupLatitude : dropoffLatitude;
+  double? get destinationLongitude => status == DeliveryStatus.assigned ? pickupLongitude : dropoffLongitude;
 
   factory Delivery.fromJson(Map<String, dynamic> json) {
     return Delivery(
       id: json['id'] as String,
-      orderShortId: json['order_short_id'] as String,
+      orderId: json['order_id'] as String,
+      restaurantId: json['restaurant_id'] as String,
+      driverId: json['driver_id'] as String,
       status: DeliveryStatus.fromString(json['status'] as String),
-      pickupAddress: json['pickup_address'] as String,
-      dropoffAddress: json['dropoff_address'] as String,
-      pickupLatitude: (json['dropoff_coordinates'] as Map<String, dynamic>?)?['latitude'] as double?,
-      pickupLongitude: (json['pickup_coordinates'] as Map<String, dynamic>?)?['longitude'] as double?,
-      dropoffLatitude: (json['dropoff_coordinates'] as Map<String, dynamic>?)?['latitude'] as double?,
-      dropoffLongitude: (json['dropoff_coordinates'] as Map<String, dynamic>?)?['longitude'] as double?,
-      customerName: json['customer_name'] as String,
-      customerContactPhone: json['customer_contact_phone'] as String?,
-      specialInstructions: json['special_instructions'] as String?,
-      items: (json['items'] as List<dynamic>?)
-              ?.map((i) => DeliveryItem.fromJson(i as Map<String, dynamic>))
-              .toList() ??
-          [],
-      createdAt: json['created_at'] != null
-          ? DateTime.parse(json['created_at'] as String)
-          : null,
+      pickupAddress: json['pickup_address'] as String?,
+      dropoffAddress: json['dropoff_address'] as String?,
+      pickupLatitude: (json['pickup_latitude'] as num?)?.toDouble(),
+      pickupLongitude: (json['pickup_longitude'] as num?)?.toDouble(),
+      dropoffLatitude: (json['dropoff_latitude'] as num?)?.toDouble(),
+      dropoffLongitude: (json['dropoff_longitude'] as num?)?.toDouble(),
+      currentLatitude: (json['current_latitude'] as num?)?.toDouble(),
+      currentLongitude: (json['current_longitude'] as num?)?.toDouble(),
+      pickedUpAt: json['picked_up_at'] != null ? DateTime.parse(json['picked_up_at'] as String) : null,
+      deliveredAt: json['delivered_at'] != null ? DateTime.parse(json['delivered_at'] as String) : null,
+      createdAt: DateTime.parse(json['created_at'] as String),
+      updatedAt: DateTime.parse(json['updated_at'] as String),
+      order: json['order'] != null ? OrderSummary.fromJson(json['order'] as Map<String, dynamic>) : null,
     );
   }
 
-  /// Convenience: the destination coordinates based on current status.
-  /// While [assigned] → pickup (restaurant). Otherwise → dropoff (customer).
-  /// Reference: PRD_Driver.md §7 Map Display
-  double? get destinationLatitude =>
-      status == DeliveryStatus.assigned ? pickupLatitude : dropoffLatitude;
-
-  double? get destinationLongitude =>
-      status == DeliveryStatus.assigned ? pickupLongitude : dropoffLongitude;
-
-  /// Convenience: the destination address based on current status.
-  String get destinationAddress =>
-      status == DeliveryStatus.assigned ? pickupAddress : dropoffAddress;
-}
-
-class DeliveryItem {
-  final String name;
-  final int quantity;
-  final List<String>? modifiers;
-
-  DeliveryItem({required this.name, required this.quantity, this.modifiers});
-
-  factory DeliveryItem.fromJson(Map<String, dynamic> json) {
-    return DeliveryItem(
-      name: json['name'] as String,
-      quantity: json['quantity'] as int,
-      modifiers: json['modifiers'] != null
-          ? List<String>.from(json['modifiers'] as List)
-          : null,
-    );
-  }
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'order_id': orderId,
+        'restaurant_id': restaurantId,
+        'driver_id': driverId,
+        'status': status.name,
+        'pickup_address': pickupAddress,
+        'dropoff_address': dropoffAddress,
+        'pickup_latitude': pickupLatitude,
+        'pickup_longitude': pickupLongitude,
+        'dropoff_latitude': dropoffLatitude,
+        'dropoff_longitude': dropoffLongitude,
+        'current_latitude': currentLatitude,
+        'current_longitude': currentLongitude,
+        'picked_up_at': pickedUpAt?.toIso8601String(),
+        'delivered_at': deliveredAt?.toIso8601String(),
+        'created_at': createdAt.toIso8601String(),
+        'updated_at': updatedAt.toIso8601String(),
+      };
 }

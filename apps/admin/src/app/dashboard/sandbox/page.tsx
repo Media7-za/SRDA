@@ -2,7 +2,7 @@
 
 import React from "react"
 import { AppShell, PageHeader } from "@restaurant-direct/ui"
-import { Beaker, ChefHat, BarChart3, Settings2, Receipt } from "lucide-react"
+import { Beaker, ChefHat, BarChart3, Settings2, Receipt, Blocks } from "lucide-react"
 import Link from "next/link"
 
 const PROTOTYPES = [
@@ -29,6 +29,14 @@ const PROTOTYPES = [
         icon: ChefHat,
         status: "Active",
         color: "bg-red-600"
+    },
+    {
+        title: "Design System Primitives",
+        description: "Foundation: Buttons, cards, states, and other reusable UI building blocks.",
+        href: "/dashboard/sandbox/design-system",
+        icon: Blocks,
+        status: "Active",
+        color: "bg-slate-900"
     },
     {
         title: "Advanced Analytics",

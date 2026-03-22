@@ -1,5 +1,8 @@
 import 'package:dio/dio.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../shared/models/earnings.dart';
+import '../../core/api/api_response.dart';
+import '../../core/auth/auth_notifier.dart';
 import 'earnings_repository.dart';
 
 /// Earnings summary state.

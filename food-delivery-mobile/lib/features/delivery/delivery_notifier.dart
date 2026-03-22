@@ -3,7 +3,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/auth/auth_notifier.dart';
 import '../../shared/models/delivery.dart';
-import '../../shared/models/delivery_status.dart';
 import 'delivery_repository.dart';
 
 /// State for a single active delivery screen.

@@ -838,6 +838,7 @@ These laws must never be violated. AI agents must not generate code that breaks 
 - Menu item copy / clone
 - Refund management UI (handled via payment provider dashboard)
 - Driver pay / earnings tracking
+- Staff & Shift Management Dashboard: live shift monitoring (clocked-in/break/late counts), per-staff performance cards with role-specific metrics (avg prep time, avg service time, deliveries completed), shift progress tracking, upcoming shift schedule view, and bulk actions (Clock Out All, Adjust Hours). Requires new schema tables: `shifts`, `clock_events`. Target app: Restaurant Dashboard (`apps/web`), not Owner Portal.
 
 ---
 

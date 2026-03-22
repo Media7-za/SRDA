@@ -11,7 +11,14 @@ class AppConfig {
   /// Injected via: `flutter run --dart-define=API_BASE_URL=https://...`
   static const String baseUrl = String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: 'http://localhost:3000',
+    defaultValue: 'http://192.168.0.123:3001',
+  );
+
+  /// Google Maps API Key placeholder.
+  /// PRD §7: Required for map integration.
+  static const String googleMapsApiKey = String.fromEnvironment(
+    'GOOGLE_MAPS_API_KEY',
+    defaultValue: 'YOUR_GOOGLE_MAPS_API_KEY_HERE',
   );
 
   // --- Secure Storage Keys ---
