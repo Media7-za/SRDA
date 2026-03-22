@@ -1,166 +1,134 @@
-# Authority Model: UI System
+# Authority Model
 
 ## Purpose
 
-This document defines the source-of-truth hierarchy for all UI decisions across the platform and tenant layers.
+This document defines the source-of-truth hierarchy for UI decisions across the platform and tenant layers.
 
 It prevents conflicts between:
 
-- platform design tokens
-- platform component contracts
-- tenant themes
-- UX blueprints
+- platform tokens
+- platform primitives and conformance rules
+- tenant themes and UX blueprints
 - implementation code
-
----
 
 ## 1. Hierarchy of Authority
 
 All UI decisions must follow this order:
 
-1. Platform tokens
-2. Platform UI constraints
-3. Tenant theme and UX blueprint
-4. Component implementation
-
----
+1. Platform Tokens
+2. Platform UI Constraints
+3. Tenant Theme and UX Blueprint
+4. Implementation
 
 ## 2. Platform Tokens
 
-### Source
+### Authority
+
+Platform tokens are the canonical source of shared structure.
+
+### Sources
 
 - `Docs/platform/design_tokens.md`
+- `packages/ui/src/platformTokens.ts`
+- `packages/ui/src/platformCssVars.ts`
+- `packages/ui/src/semanticTokens.ts`
 
 ### Defines
 
 - spacing scale
 - radius scale
-- breakpoints
+- shared component dimensions
 - motion rules
-- accessibility rules
-- semantic operational status colors
-- shared component base dimensions
+- accessibility constraints
+- semantic operational states
 
 ### Rules
 
 - Must not be overridden arbitrarily by tenants
-- Must be used by all shared primitives
-- Must be referenced via semantic tokens or CSS variables in implementation
-
-### Example
-
-Allowed:
-
-```ts
-borderRadius: "var(--radius-lg)"
-```
-
-Forbidden:
-
-```ts
-borderRadius: "24px"
-```
-
----
+- Must be referenced through platform token files or theme variables
+- If a needed value does not exist, it must be proposed at the platform level before implementation
 
 ## 3. Platform UI Constraints
 
-### Source
+### Sources
 
 - `Docs/component_architecture.md`
 - `Docs/ui_conformance_rules.md`
+- shared primitives in `packages/ui/src/primitives`
 
 ### Defines
 
-- allowed components
-- forbidden patterns
-- required states
+- allowed primitive components
+- forbidden implementation patterns
+- required state handling
 - accessibility guarantees
-- composition rules
 
 ### Rules
 
-- All UI must use approved primitives and canonical components
-- Raw styling that bypasses the system is not allowed
-- Violations should fail review, QA, or CI
-
----
+- Shared UI must use approved primitives
+- Raw structural styling should not bypass the primitive layer
+- Violations should be treated as architecture defects, not stylistic differences
 
 ## 4. Tenant Theme and UX Blueprint
 
-### Source
+### Sources
 
-- `Docs/tenants/phuket_thai/design_tokens.md`
-- `Docs/tenants/phuket-thai/UX_Blueprint.md`
-- future tenant-specific screen and theme documents
+- `Docs/tenants/`
+- `packages/ui/src/phuketThaiThemeVars.ts`
+- future tenant-specific component and screen layers
 
 ### Defines
 
 - brand identity
 - visual tone
-- layout style
-- screen composition patterns
+- layout feel
 - feature emphasis
+- screen-specific composition choices
 
 ### Rules
 
-- May override semantic brand-facing values
-- May define composed tenant components and screen patterns
-- Must not override platform accessibility, structural tokens, or primitive APIs
+- Tenants may override semantic theme values such as colors and brand accents
+- Tenants may define composed components and screen patterns
+- Tenants may not override platform accessibility, structural primitives, or enforcement rules
 
-If a tenant needs a new spacing, radius, shadow, or primitive capability, it must be proposed at the platform layer first.
+## 5. Implementation
 
----
+### Sources
 
-## 5. Component Implementation
-
-### Source
-
-- `apps/**`
-- `packages/ui/src/**`
+- application code under `apps/`
+- shared UI code under `packages/ui/src`
 
 ### Rules
 
-- Must use platform primitives
-- Must use token-backed values
-- Must follow the active tenant UX blueprint
-- Must not hardcode colors, arbitrary spacing, or bypass approved primitives for domain components
-
----
+- Implementation is the lowest authority layer
+- Code must use platform primitives and approved token sources
+- Code must respect the active tenant blueprint
+- Code must not invent new design-system values inline
 
 ## 6. Conflict Resolution
 
-If two layers conflict, resolve them in this order:
+If two layers conflict, resolve by this priority:
 
-1. Platform tokens
-2. Platform UI constraints
-3. Tenant theme and UX blueprint
-4. Implementation code
+1. Platform Tokens
+2. Platform UI Constraints
+3. Tenant Theme and UX Blueprint
+4. Implementation
 
 Example:
 
-If a tenant wants a `24px` radius but the platform only defines `sm`, `md`, `lg`, and `pill`, implementation must not invent `24px`. The value must first be approved and added as a platform token.
+If a tenant wants a new radius value that does not exist in platform tokens, implementation must stop at the proposal stage. The new value must be approved and added to the platform first.
 
----
-
-## 7. Non-Negotiable Rules
+## 7. Non-Negotiable Principles
 
 - UI is not free-form
-- Tokens are the only source of shared values
-- Primitives are the approved building blocks
+- Tokens are the source of structural values
+- Primitives are the approved reusable building blocks
 - Tenants define experience, not platform structure
-
----
 
 ## 8. Summary
 
-| Layer | Responsibility |
-| --- | --- |
-| Platform tokens | Define shared structure |
-| UI constraints | Enforce correctness |
-| Tenant docs | Define experience |
-| Implementation | Render the approved result |
+Platform defines possibility.
 
-## Final Principle
+Tenant defines experience.
 
-UI is a constrained expression of domain truth, not an open canvas.
+Implementation renders the final expression inside those constraints.
